@@ -1,0 +1,17 @@
+[INFO]: Run Directory: /openlane/designs/DP_1/runs/RUN_2026.01.26_17.22.19
+[INFO]: Saving runtime environment...
+[INFO]: Preparing LEF files for the nom corner...
+[INFO]: Preparing LEF files for the min corner...
+[INFO]: Preparing LEF files for the max corner...
+[INFO]: Running linter (Verilator) (log: designs/DP_1/runs/RUN_2026.01.26_17.22.19/logs/synthesis/linter.log)...
+[ERROR]: Step 0 (verilator_lint_check) failed with error:
+-code 1 -level 0 -errorcode NONE -errorinfo {no such variable
+    (read trace on "::env(VERILOG_FILES)")
+    invoked from within
+"lappend arg_list {*}$::env(VERILOG_FILES)"
+    (procedure "run_verilator" line 20)
+    invoked from within
+"run_verilator"
+    (procedure "run_verilator_step" line 3)
+    invoked from within
+"run_verilator_step"} -errorline 1
