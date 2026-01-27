@@ -1,51 +1,78 @@
 /*
- * Copyright (c) 2025 Your Name
- * SPDX-License-Identifier: Apache-2.0
+ * Simple SPI Master Peripheral for TinyQV
  */
 
 `default_nettype none
 
-// Change the name of this module to something that reflects its functionality and includes your name for uniqueness
-// For example tqvp_yourname_spi for an SPI peripheral.
-// Then edit tt_wrapper.v line 38 and change tqvp_example to your chosen module name.
-module tqvp_example (
-    input         clk,          // Clock - the TinyQV project clock is normally set to 64MHz.
-    input         rst_n,        // Reset_n - low to reset.
-
-    input  [7:0]  ui_in,        // The input PMOD, always available.  Note that ui_in[7] is normally used for UART RX.
-                                // The inputs are synchronized to the clock, note this will introduce 2 cycles of delay on the inputs.
-
-    output [7:0]  uo_out,       // The output PMOD.  Each wire is only connected if this peripheral is selected.
-                                // Note that uo_out[0] is normally used for UART TX.
-
-    input [3:0]   address,      // Address within this peripheral's address space
-
-    input         data_write,   // Data write request from the TinyQV core.
-    input [7:0]   data_in,      // Data in to the peripheral, valid when data_write is high.
-    
-    output [7:0]  data_out      // Data out from the peripheral, set this in accordance with the supplied address
+module tqvp_spi_master (
+    input  wire       clk,          // System clock
+    input  wire       rst_n,        // Active low reset
+    input  wire [7:0] ui_in,        // Inputs (unused here)
+    output wire [7:0] uo_out,       // SPI Pins: [0]=CLK, [1]=MOSI, [2]=CS
+    input  wire [3:0] address,      // Register address [cite: 1]
+    input  wire       data_write,   // Write enable [cite: 1]
+    input  wire [7:0] data_in,      // Data from CPU [cite: 1]
+    output wire [7:0] data_out      // Data to CPU [cite: 1]
 );
 
-    // Example: Implement an 8-bit read/write register at address 0
-    reg [7:0] example_data;
+    // --- Registers ---
+    // Addr 0: Data Register (Write starts transmission)
+    // Addr 1: Status Register (Bit 0: Busy)
+    // Addr 2: Clock Divider (Speed control)
+    
+    reg [7:0] shift_reg;
+    reg [7:0] clk_divider;
+    reg [7:0] div_count;
+    reg [3:0] bit_count;
+    reg       busy;
+    reg       spi_clk;
+    reg       spi_cs_n;
+
+    // --- State Machine ---
     always @(posedge clk) begin
         if (!rst_n) begin
-            example_data <= 0;
-        end else begin
-            if (address == 4'h0) begin
-                if (data_write) example_data <= data_in;
+            busy <= 0;
+            bit_count <= 0;
+            spi_cs_n <= 1;
+            spi_clk <= 0;
+            div_count <= 0;
+            clk_divider <= 8'd4; // Default speed
+        end else if (data_write && address == 4'h0 && !busy) begin
+            // Start Transmission
+            shift_reg <= data_in;
+            busy <= 1;
+            bit_count <= 8;
+            spi_cs_n <= 0;
+            div_count <= 0;
+        end else if (data_write && address == 4'h2) begin
+            clk_divider <= data_in;
+        end else if (busy) begin
+            if (div_count < clk_divider) begin
+                div_count <= div_count + 1'b1;
+            end else begin
+                div_count <= 0;
+                if (spi_clk == 1'b0) begin
+                    // Rising edge: shift out data
+                    spi_clk <= 1;
+                end else begin
+                    // Falling edge: next bit
+                    spi_clk <= 0;
+                    shift_reg <= {shift_reg[6:0], 1'b0};
+                    bit_count <= bit_count - 1'b1;
+                    if (bit_count == 1) begin
+                        busy <= 0;
+                        spi_cs_n <= 1;
+                    end
+                end
             end
         end
     end
 
-    // All output pins must be assigned. If not used, assign to 0.
-    assign uo_out  = ui_in + example_data;  // Example: uo_out is the sum of ui_in and the example register
+    // --- CPU Interface ---
+    assign data_out = (address == 4'h1) ? {7'b0, busy} : 
+                      (address == 4'h2) ? clk_divider : 8'h0;
 
-    // Address 0 reads the example data register.  
-    // Address 1 reads ui_in
-    // All other addresses read 0.
-    assign data_out = (address == 4'h0) ? example_data :
-                      (address == 4'h1) ? ui_in :
-                      8'h0;    
+    // --- Output Mapping ---
+    assign uo_out = {5'b0, spi_cs_n, shift_reg[7], spi_clk};
 
 endmodule
