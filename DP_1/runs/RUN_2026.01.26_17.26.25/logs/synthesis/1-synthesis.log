@@ -1,0 +1,1534 @@
+
+ /----------------------------------------------------------------------------\
+ |                                                                            |
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |                                                                            |
+ |  Copyright (C) 2012 - 2020  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |                                                                            |
+ |  Permission to use, copy, modify, and/or distribute this software for any  |
+ |  purpose with or without fee is hereby granted, provided that the above    |
+ |  copyright notice and this permission notice appear in all copies.         |
+ |                                                                            |
+ |  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES  |
+ |  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF          |
+ |  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR   |
+ |  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    |
+ |  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN     |
+ |  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF   |
+ |  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.            |
+ |                                                                            |
+ \----------------------------------------------------------------------------/
+
+ Yosys 0.30+48 (git sha1 14d50a176d5, gcc 8.3.1 -fPIC -Os)
+
+[TCL: yosys -import] Command name collision: found pre-existing command `cd' -> skip.
+[TCL: yosys -import] Command name collision: found pre-existing command `eval' -> skip.
+[TCL: yosys -import] Command name collision: found pre-existing command `exec' -> skip.
+[TCL: yosys -import] Command name collision: found pre-existing command `read' -> skip.
+[TCL: yosys -import] Command name collision: found pre-existing command `trace' -> skip.
+
+1. Executing Verilog-2005 frontend: /openlane/designs/DP_1/tinyqv.v
+Parsing SystemVerilog input from `/openlane/designs/DP_1/tinyqv.v' to AST representation.
+Generating RTLIL representation for module `\tinyQV'.
+Successfully finished Verilog frontend.
+
+2. Executing Verilog-2005 frontend: /openlane/designs/DP_1/tt_wrapper.v
+Parsing SystemVerilog input from `/openlane/designs/DP_1/tt_wrapper.v' to AST representation.
+Generating RTLIL representation for module `\tt_um_tqv_peripheral_harness'.
+Successfully finished Verilog frontend.
+
+3. Executing Verilog-2005 frontend: /openlane/designs/DP_1/cpu.v
+Parsing SystemVerilog input from `/openlane/designs/DP_1/cpu.v' to AST representation.
+Generating RTLIL representation for module `\tinyqv_cpu'.
+Successfully finished Verilog frontend.
+
+4. Executing Verilog-2005 frontend: /openlane/designs/DP_1/core.v
+Parsing SystemVerilog input from `/openlane/designs/DP_1/core.v' to AST representation.
+Generating RTLIL representation for module `\tinyqv_core'.
+Successfully finished Verilog frontend.
+
+5. Executing Verilog-2005 frontend: /openlane/designs/DP_1/decode.v
+Parsing SystemVerilog input from `/openlane/designs/DP_1/decode.v' to AST representation.
+Generating RTLIL representation for module `\tinyqv_decoder'.
+Successfully finished Verilog frontend.
+
+6. Executing Verilog-2005 frontend: /openlane/designs/DP_1/alu.v
+Parsing SystemVerilog input from `/openlane/designs/DP_1/alu.v' to AST representation.
+Generating RTLIL representation for module `\tinyqv_alu'.
+Generating RTLIL representation for module `\tinyqv_shifter'.
+Generating RTLIL representation for module `\tinyqv_mul'.
+Successfully finished Verilog frontend.
+
+7. Executing Verilog-2005 frontend: /openlane/designs/DP_1/register.v
+Parsing SystemVerilog input from `/openlane/designs/DP_1/register.v' to AST representation.
+Generating RTLIL representation for module `\tinyqv_registers'.
+Warning: Replacing memory \registers with list of registers. See /openlane/designs/DP_1/register.v:44
+Successfully finished Verilog frontend.
+
+8. Executing Verilog-2005 frontend: /openlane/designs/DP_1/latch_reg.v
+Parsing SystemVerilog input from `/openlane/designs/DP_1/latch_reg.v' to AST representation.
+Generating RTLIL representation for module `\latch_reg_n'.
+Generating RTLIL representation for module `\latch_reg_p'.
+Generating RTLIL representation for module `\latch_reg32_n'.
+Generating RTLIL representation for module `\latch_reg32_p'.
+Successfully finished Verilog frontend.
+
+9. Executing Verilog-2005 frontend: /openlane/designs/DP_1/mem_ctrl.v
+Parsing SystemVerilog input from `/openlane/designs/DP_1/mem_ctrl.v' to AST representation.
+Generating RTLIL representation for module `\tinyqv_mem_ctrl'.
+Successfully finished Verilog frontend.
+
+10. Executing Verilog-2005 frontend: /openlane/designs/DP_1/qspi_ctrl.v
+Parsing SystemVerilog input from `/openlane/designs/DP_1/qspi_ctrl.v' to AST representation.
+Generating RTLIL representation for module `\qspi_controller'.
+Successfully finished Verilog frontend.
+
+11. Executing Verilog-2005 frontend: /openlane/designs/DP_1/peripheral.v
+Parsing SystemVerilog input from `/openlane/designs/DP_1/peripheral.v' to AST representation.
+Generating RTLIL representation for module `\tqvp_matt_pwm'.
+Successfully finished Verilog frontend.
+
+12. Executing Verilog-2005 frontend: /openlane/designs/DP_1/counter.v
+Parsing SystemVerilog input from `/openlane/designs/DP_1/counter.v' to AST representation.
+Generating RTLIL representation for module `\tinyqv_counter'.
+Successfully finished Verilog frontend.
+
+13. Executing Verilog-2005 frontend: /openlane/designs/DP_1/reclocking.sv
+Parsing SystemVerilog input from `/openlane/designs/DP_1/reclocking.sv' to AST representation.
+Generating RTLIL representation for module `\reclocking'.
+Successfully finished Verilog frontend.
+
+14. Executing Verilog-2005 frontend: /openlane/designs/DP_1/rising_edge_detector.sv
+Parsing SystemVerilog input from `/openlane/designs/DP_1/rising_edge_detector.sv' to AST representation.
+Generating RTLIL representation for module `\rising_edge_detector'.
+Successfully finished Verilog frontend.
+
+15. Executing Verilog-2005 frontend: /openlane/designs/DP_1/falling_edge_detector.sv
+Parsing SystemVerilog input from `/openlane/designs/DP_1/falling_edge_detector.sv' to AST representation.
+Generating RTLIL representation for module `\falling_edge_detector'.
+Successfully finished Verilog frontend.
+
+16. Executing Verilog-2005 frontend: /openlane/designs/DP_1/spi_reg.sv
+Parsing SystemVerilog input from `/openlane/designs/DP_1/spi_reg.sv' to AST representation.
+Generating RTLIL representation for module `\spi_reg'.
+Successfully finished Verilog frontend.
+
+17. Executing Verilog-2005 frontend: /openlane/designs/DP_1/synchronizer.sv
+Parsing SystemVerilog input from `/openlane/designs/DP_1/synchronizer.sv' to AST representation.
+Generating RTLIL representation for module `\synchronizer'.
+Warning: Replacing memory \data_sync with list of registers. See /openlane/designs/DP_1/synchronizer.sv:14
+Successfully finished Verilog frontend.
+
+18. Generating Graphviz representation of design.
+Writing dot description to `/openlane/designs/DP_1/runs/RUN_2026.01.26_17.26.25/tmp/synthesis/hierarchy.dot'.
+Dumping module tt_um_tqv_peripheral_harness to page 1.
+
+19. Executing HIERARCHY pass (managing design hierarchy).
+
+19.1. Analyzing design hierarchy..
+Top module:  \tt_um_tqv_peripheral_harness
+Used module:     \spi_reg
+Used module:         \falling_edge_detector
+Used module:         \rising_edge_detector
+Used module:     \synchronizer
+Used module:         \reclocking
+Used module:     \tqvp_matt_pwm
+Parameter \ADDR_W = 4
+
+19.2. Executing AST frontend in derive mode using pre-parsed AST for module `\spi_reg'.
+Parameter \ADDR_W = 4
+Generating RTLIL representation for module `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100'.
+Parameter \STAGES = 2
+Parameter \WIDTH = 1
+
+19.3. Executing AST frontend in derive mode using pre-parsed AST for module `\synchronizer'.
+Parameter \STAGES = 2
+Parameter \WIDTH = 1
+Generating RTLIL representation for module `$paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer'.
+Warning: Replacing memory \data_sync with list of registers. See /openlane/designs/DP_1/synchronizer.sv:14
+Parameter \STAGES = 2
+Parameter \WIDTH = 1
+Found cached RTLIL representation for module `$paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer'.
+Parameter \STAGES = 2
+Parameter \WIDTH = 1
+Found cached RTLIL representation for module `$paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer'.
+Parameter \STAGES = 2
+Parameter \WIDTH = 8
+
+19.4. Executing AST frontend in derive mode using pre-parsed AST for module `\synchronizer'.
+Parameter \STAGES = 2
+Parameter \WIDTH = 8
+Generating RTLIL representation for module `$paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer'.
+Warning: Replacing memory \data_sync with list of registers. See /openlane/designs/DP_1/synchronizer.sv:14
+Parameter \WIDTH = 4
+
+19.5. Executing AST frontend in derive mode using pre-parsed AST for module `\reclocking'.
+Parameter \WIDTH = 4
+Generating RTLIL representation for module `$paramod\reclocking\WIDTH=s32'00000000000000000000000000000100'.
+Parameter \WIDTH = 4
+Found cached RTLIL representation for module `$paramod\reclocking\WIDTH=s32'00000000000000000000000000000100'.
+Reprocessing module synchronizer because instantiated module $paramod\reclocking\WIDTH=s32'00000000000000000000000000000100 has become available.
+Generating RTLIL representation for module `\synchronizer'.
+Warning: Replacing memory \data_sync with list of registers. See /openlane/designs/DP_1/synchronizer.sv:14
+
+19.6. Analyzing design hierarchy..
+Top module:  \tt_um_tqv_peripheral_harness
+Used module:     $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100
+Used module:         \falling_edge_detector
+Used module:         \rising_edge_detector
+Used module:     $paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer
+Used module:         \reclocking
+Used module:     \tqvp_matt_pwm
+Used module:     $paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer
+Parameter \WIDTH = 1
+
+19.7. Executing AST frontend in derive mode using pre-parsed AST for module `\reclocking'.
+Parameter \WIDTH = 1
+Generating RTLIL representation for module `$paramod\reclocking\WIDTH=s32'00000000000000000000000000000001'.
+Parameter \WIDTH = 1
+Found cached RTLIL representation for module `$paramod\reclocking\WIDTH=s32'00000000000000000000000000000001'.
+Reprocessing module $paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer because instantiated module $paramod\reclocking\WIDTH=s32'00000000000000000000000000000001 has become available.
+Generating RTLIL representation for module `$paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer'.
+Warning: Replacing memory \data_sync with list of registers. See /openlane/designs/DP_1/synchronizer.sv:14
+Parameter \WIDTH = 8
+
+19.8. Executing AST frontend in derive mode using pre-parsed AST for module `\reclocking'.
+Parameter \WIDTH = 8
+Generating RTLIL representation for module `$paramod\reclocking\WIDTH=s32'00000000000000000000000000001000'.
+Parameter \WIDTH = 8
+Found cached RTLIL representation for module `$paramod\reclocking\WIDTH=s32'00000000000000000000000000001000'.
+Reprocessing module $paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer because instantiated module $paramod\reclocking\WIDTH=s32'00000000000000000000000000001000 has become available.
+Generating RTLIL representation for module `$paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer'.
+Warning: Replacing memory \data_sync with list of registers. See /openlane/designs/DP_1/synchronizer.sv:14
+
+19.9. Analyzing design hierarchy..
+Top module:  \tt_um_tqv_peripheral_harness
+Used module:     $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100
+Used module:         \falling_edge_detector
+Used module:         \rising_edge_detector
+Used module:     $paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer
+Used module:         \reclocking
+Used module:     \tqvp_matt_pwm
+Used module:     $paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer
+Parameter \WIDTH = 1
+Found cached RTLIL representation for module `$paramod\reclocking\WIDTH=s32'00000000000000000000000000000001'.
+Parameter \WIDTH = 1
+Found cached RTLIL representation for module `$paramod\reclocking\WIDTH=s32'00000000000000000000000000000001'.
+Parameter \WIDTH = 8
+Found cached RTLIL representation for module `$paramod\reclocking\WIDTH=s32'00000000000000000000000000001000'.
+Parameter \WIDTH = 8
+Found cached RTLIL representation for module `$paramod\reclocking\WIDTH=s32'00000000000000000000000000001000'.
+
+19.10. Analyzing design hierarchy..
+Top module:  \tt_um_tqv_peripheral_harness
+Used module:     $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100
+Used module:         \falling_edge_detector
+Used module:         \rising_edge_detector
+Used module:     $paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer
+Used module:         $paramod\reclocking\WIDTH=s32'00000000000000000000000000000001
+Used module:     \tqvp_matt_pwm
+Used module:     $paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer
+Used module:         $paramod\reclocking\WIDTH=s32'00000000000000000000000000001000
+
+19.11. Analyzing design hierarchy..
+Top module:  \tt_um_tqv_peripheral_harness
+Used module:     $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100
+Used module:         \falling_edge_detector
+Used module:         \rising_edge_detector
+Used module:     $paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer
+Used module:         $paramod\reclocking\WIDTH=s32'00000000000000000000000000000001
+Used module:     \tqvp_matt_pwm
+Used module:     $paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer
+Used module:         $paramod\reclocking\WIDTH=s32'00000000000000000000000000001000
+Removing unused module `\synchronizer'.
+Removing unused module `$paramod\reclocking\WIDTH=s32'00000000000000000000000000000100'.
+Removing unused module `\spi_reg'.
+Removing unused module `\reclocking'.
+Removing unused module `\tinyqv_counter'.
+Removing unused module `\qspi_controller'.
+Removing unused module `\tinyqv_mem_ctrl'.
+Removing unused module `\latch_reg32_p'.
+Removing unused module `\latch_reg32_n'.
+Removing unused module `\latch_reg_p'.
+Removing unused module `\latch_reg_n'.
+Removing unused module `\tinyqv_registers'.
+Removing unused module `\tinyqv_mul'.
+Removing unused module `\tinyqv_shifter'.
+Removing unused module `\tinyqv_alu'.
+Removing unused module `\tinyqv_decoder'.
+Removing unused module `\tinyqv_core'.
+Removing unused module `\tinyqv_cpu'.
+Removing unused module `\tinyQV'.
+Removed 19 unused modules.
+
+20. Executing TRIBUF pass.
+
+21. Executing HIERARCHY pass (managing design hierarchy).
+
+21.1. Analyzing design hierarchy..
+Top module:  \tt_um_tqv_peripheral_harness
+Used module:     $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100
+Used module:         \falling_edge_detector
+Used module:         \rising_edge_detector
+Used module:     $paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer
+Used module:         $paramod\reclocking\WIDTH=s32'00000000000000000000000000000001
+Used module:     \tqvp_matt_pwm
+Used module:     $paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer
+Used module:         $paramod\reclocking\WIDTH=s32'00000000000000000000000000001000
+
+21.2. Analyzing design hierarchy..
+Top module:  \tt_um_tqv_peripheral_harness
+Used module:     $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100
+Used module:         \falling_edge_detector
+Used module:         \rising_edge_detector
+Used module:     $paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer
+Used module:         $paramod\reclocking\WIDTH=s32'00000000000000000000000000000001
+Used module:     \tqvp_matt_pwm
+Used module:     $paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer
+Used module:         $paramod\reclocking\WIDTH=s32'00000000000000000000000000001000
+Removed 0 unused modules.
+
+22. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+23. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 1 switch rules as full_case in process $proc$/openlane/designs/DP_1/peripheral.v:67$788 in module tqvp_matt_pwm.
+Marked 2 switch rules as full_case in process $proc$/openlane/designs/DP_1/peripheral.v:56$785 in module tqvp_matt_pwm.
+Marked 1 switch rules as full_case in process $proc$/openlane/designs/DP_1/peripheral.v:32$776 in module tqvp_matt_pwm.
+Marked 1 switch rules as full_case in process $proc$/openlane/designs/DP_1/spi_reg.sv:216$889 in module $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.
+Marked 1 switch rules as full_case in process $proc$/openlane/designs/DP_1/spi_reg.sv:188$885 in module $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.
+Marked 2 switch rules as full_case in process $proc$/openlane/designs/DP_1/spi_reg.sv:169$879 in module $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.
+Marked 3 switch rules as full_case in process $proc$/openlane/designs/DP_1/spi_reg.sv:142$873 in module $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.
+Marked 12 switch rules as full_case in process $proc$/openlane/designs/DP_1/spi_reg.sv:0$861 in module $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.
+Marked 1 switch rules as full_case in process $proc$/openlane/designs/DP_1/spi_reg.sv:66$858 in module $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.
+Marked 1 switch rules as full_case in process $proc$/openlane/designs/DP_1/falling_edge_detector.sv:17$805 in module falling_edge_detector.
+Marked 1 switch rules as full_case in process $proc$/openlane/designs/DP_1/rising_edge_detector.sv:17$800 in module rising_edge_detector.
+Removed a total of 0 dead cases.
+
+24. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 1 redundant assignment.
+Promoted 13 assignments to connections.
+
+25. Executing PROC_INIT pass (extract init attributes).
+
+26. Executing PROC_ARST pass (detect async resets in processes).
+Found async reset \rstb in `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:216$889'.
+Found async reset \rstb in `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:188$885'.
+Found async reset \rstb in `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:169$879'.
+Found async reset \rstb in `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:142$873'.
+Found async reset \rstb in `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:66$858'.
+Found async reset \rstb in `\falling_edge_detector.$proc$/openlane/designs/DP_1/falling_edge_detector.sv:17$805'.
+Found async reset \rstb in `\rising_edge_detector.$proc$/openlane/designs/DP_1/rising_edge_detector.sv:17$800'.
+
+27. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~34 debug messages>
+
+28. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `$paramod\reclocking\WIDTH=s32'00000000000000000000000000000001.$proc$/openlane/designs/DP_1/reclocking.sv:15$904'.
+Creating decoders for process `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:67$788'.
+     1/3: $0\pwm_out_1[0:0]
+     2/3: $0\pwm_out_0[0:0]
+     3/3: $0\pwm_count[7:0]
+Creating decoders for process `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:56$785'.
+     1/1: $0\strobe_count[15:0]
+Creating decoders for process `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:32$776'.
+     1/3: $0\strobe_period[7:0]
+     2/3: $0\pwm_level_1[7:0]
+     3/3: $0\pwm_level_0[7:0]
+Creating decoders for process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:216$889'.
+     1/1: $0\dv[0:0]
+Creating decoders for process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:188$885'.
+     1/2: $0\reg_rw[0:0]
+     2/2: $0\addr[3:0]
+Creating decoders for process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:169$879'.
+     1/1: $0\buffer_counter[3:0]
+Creating decoders for process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:142$873'.
+     1/1: $0\txn_buffer[7:0]
+Creating decoders for process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:0$861'.
+     1/18: $12\next_state[2:0]
+     2/18: $11\next_state[2:0]
+     3/18: $2\tx_buffer_load[0:0]
+     4/18: $10\next_state[2:0]
+     5/18: $9\next_state[2:0]
+     6/18: $8\next_state[2:0]
+     7/18: $2\sample_data[0:0]
+     8/18: $7\next_state[2:0]
+     9/18: $6\next_state[2:0]
+    10/18: $5\next_state[2:0]
+    11/18: $4\next_state[2:0]
+    12/18: $3\next_state[2:0]
+    13/18: $2\sample_addr[0:0]
+    14/18: $2\next_state[2:0]
+    15/18: $1\next_state[2:0]
+    16/18: $1\sample_data[0:0]
+    17/18: $1\sample_addr[0:0]
+    18/18: $1\tx_buffer_load[0:0]
+Creating decoders for process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:66$858'.
+     1/1: $0\state[2:0]
+Creating decoders for process `$paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer.$proc$/openlane/designs/DP_1/synchronizer.sv:0$915'.
+Creating decoders for process `$paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer.$proc$/openlane/designs/DP_1/synchronizer.sv:0$909'.
+Creating decoders for process `\falling_edge_detector.$proc$/openlane/designs/DP_1/falling_edge_detector.sv:17$805'.
+     1/1: $0\data_dly[0:0]
+Creating decoders for process `\rising_edge_detector.$proc$/openlane/designs/DP_1/rising_edge_detector.sv:17$800'.
+     1/1: $0\data_dly[0:0]
+Creating decoders for process `\tt_um_tqv_peripheral_harness.$proc$/openlane/designs/DP_1/tt_wrapper.v:34$14'.
+Creating decoders for process `$paramod\reclocking\WIDTH=s32'00000000000000000000000000001000.$proc$/openlane/designs/DP_1/reclocking.sv:15$910'.
+
+29. Executing PROC_DLATCH pass (convert process syncs to latches).
+No latch inferred for signal `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.\next_state' from process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:0$861'.
+No latch inferred for signal `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.\tx_buffer_load' from process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:0$861'.
+No latch inferred for signal `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.\sample_addr' from process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:0$861'.
+No latch inferred for signal `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.\sample_data' from process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:0$861'.
+No latch inferred for signal `$paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer.\data_sync[0]' from process `$paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer.$proc$/openlane/designs/DP_1/synchronizer.sv:0$915'.
+No latch inferred for signal `$paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer.\data_sync[1]' from process `$paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer.$proc$/openlane/designs/DP_1/synchronizer.sv:0$915'.
+No latch inferred for signal `$paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer.\data_sync[2]' from process `$paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer.$proc$/openlane/designs/DP_1/synchronizer.sv:0$915'.
+No latch inferred for signal `$paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer.\data_sync[0]' from process `$paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer.$proc$/openlane/designs/DP_1/synchronizer.sv:0$909'.
+No latch inferred for signal `$paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer.\data_sync[1]' from process `$paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer.$proc$/openlane/designs/DP_1/synchronizer.sv:0$909'.
+No latch inferred for signal `$paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer.\data_sync[2]' from process `$paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer.$proc$/openlane/designs/DP_1/synchronizer.sv:0$909'.
+
+30. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `$paramod\reclocking\WIDTH=s32'00000000000000000000000000000001.\data_sync' using process `$paramod\reclocking\WIDTH=s32'00000000000000000000000000000001.$proc$/openlane/designs/DP_1/reclocking.sv:15$904'.
+  created $dff cell `$procdff$1149' with positive edge clock.
+Creating register for signal `\tqvp_matt_pwm.\pwm_count' using process `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:67$788'.
+  created $dff cell `$procdff$1150' with positive edge clock.
+Creating register for signal `\tqvp_matt_pwm.\pwm_out_0' using process `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:67$788'.
+  created $dff cell `$procdff$1151' with positive edge clock.
+Creating register for signal `\tqvp_matt_pwm.\pwm_out_1' using process `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:67$788'.
+  created $dff cell `$procdff$1152' with positive edge clock.
+Creating register for signal `\tqvp_matt_pwm.\strobe_count' using process `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:56$785'.
+  created $dff cell `$procdff$1153' with positive edge clock.
+Creating register for signal `\tqvp_matt_pwm.\pwm_level_0' using process `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:32$776'.
+  created $dff cell `$procdff$1154' with positive edge clock.
+Creating register for signal `\tqvp_matt_pwm.\pwm_level_1' using process `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:32$776'.
+  created $dff cell `$procdff$1155' with positive edge clock.
+Creating register for signal `\tqvp_matt_pwm.\strobe_period' using process `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:32$776'.
+  created $dff cell `$procdff$1156' with positive edge clock.
+Creating register for signal `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.\dv' using process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:216$889'.
+  created $adff cell `$procdff$1157' with positive edge clock and negative level reset.
+Creating register for signal `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.\addr' using process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:188$885'.
+  created $adff cell `$procdff$1158' with positive edge clock and negative level reset.
+Creating register for signal `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.\reg_rw' using process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:188$885'.
+  created $adff cell `$procdff$1159' with positive edge clock and negative level reset.
+Creating register for signal `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.\buffer_counter' using process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:169$879'.
+  created $adff cell `$procdff$1160' with positive edge clock and negative level reset.
+Creating register for signal `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.\txn_buffer' using process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:142$873'.
+  created $adff cell `$procdff$1161' with positive edge clock and negative level reset.
+Creating register for signal `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.\state' using process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:66$858'.
+  created $adff cell `$procdff$1162' with positive edge clock and negative level reset.
+Creating register for signal `\falling_edge_detector.\data_dly' using process `\falling_edge_detector.$proc$/openlane/designs/DP_1/falling_edge_detector.sv:17$805'.
+  created $adff cell `$procdff$1163' with positive edge clock and negative level reset.
+Creating register for signal `\rising_edge_detector.\data_dly' using process `\rising_edge_detector.$proc$/openlane/designs/DP_1/rising_edge_detector.sv:17$800'.
+  created $adff cell `$procdff$1164' with positive edge clock and negative level reset.
+Creating register for signal `\tt_um_tqv_peripheral_harness.\rst_reg_n' using process `\tt_um_tqv_peripheral_harness.$proc$/openlane/designs/DP_1/tt_wrapper.v:34$14'.
+  created $dff cell `$procdff$1165' with negative edge clock.
+Creating register for signal `$paramod\reclocking\WIDTH=s32'00000000000000000000000000001000.\data_sync' using process `$paramod\reclocking\WIDTH=s32'00000000000000000000000000001000.$proc$/openlane/designs/DP_1/reclocking.sv:15$910'.
+  created $dff cell `$procdff$1166' with positive edge clock.
+
+31. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+32. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Removing empty process `$paramod\reclocking\WIDTH=s32'00000000000000000000000000000001.$proc$/openlane/designs/DP_1/reclocking.sv:15$904'.
+Found and cleaned up 2 empty switches in `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:67$788'.
+Removing empty process `tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:67$788'.
+Found and cleaned up 2 empty switches in `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:56$785'.
+Removing empty process `tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:56$785'.
+Found and cleaned up 3 empty switches in `\tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:32$776'.
+Removing empty process `tqvp_matt_pwm.$proc$/openlane/designs/DP_1/peripheral.v:32$776'.
+Found and cleaned up 2 empty switches in `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:216$889'.
+Removing empty process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:216$889'.
+Found and cleaned up 2 empty switches in `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:188$885'.
+Removing empty process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:188$885'.
+Found and cleaned up 3 empty switches in `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:169$879'.
+Removing empty process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:169$879'.
+Found and cleaned up 5 empty switches in `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:142$873'.
+Removing empty process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:142$873'.
+Found and cleaned up 12 empty switches in `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:0$861'.
+Removing empty process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:0$861'.
+Found and cleaned up 1 empty switch in `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:66$858'.
+Removing empty process `$paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.$proc$/openlane/designs/DP_1/spi_reg.sv:66$858'.
+Removing empty process `$paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer.$proc$/openlane/designs/DP_1/synchronizer.sv:0$915'.
+Removing empty process `$paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer.$proc$/openlane/designs/DP_1/synchronizer.sv:0$909'.
+Found and cleaned up 1 empty switch in `\falling_edge_detector.$proc$/openlane/designs/DP_1/falling_edge_detector.sv:17$805'.
+Removing empty process `falling_edge_detector.$proc$/openlane/designs/DP_1/falling_edge_detector.sv:17$805'.
+Found and cleaned up 1 empty switch in `\rising_edge_detector.$proc$/openlane/designs/DP_1/rising_edge_detector.sv:17$800'.
+Removing empty process `rising_edge_detector.$proc$/openlane/designs/DP_1/rising_edge_detector.sv:17$800'.
+Removing empty process `tt_um_tqv_peripheral_harness.$proc$/openlane/designs/DP_1/tt_wrapper.v:34$14'.
+Removing empty process `$paramod\reclocking\WIDTH=s32'00000000000000000000000000001000.$proc$/openlane/designs/DP_1/reclocking.sv:15$910'.
+Cleaned up 34 empty switches.
+
+33. Executing CHECK pass (checking for obvious problems).
+Checking module $paramod\reclocking\WIDTH=s32'00000000000000000000000000000001...
+Checking module tqvp_matt_pwm...
+Checking module $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100...
+Checking module $paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer...
+Checking module $paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer...
+Checking module falling_edge_detector...
+Checking module rising_edge_detector...
+Checking module tt_um_tqv_peripheral_harness...
+Checking module $paramod\reclocking\WIDTH=s32'00000000000000000000000000001000...
+Found and reported 0 problems.
+
+34. Executing OPT_EXPR pass (perform const folding).
+Optimizing module $paramod\reclocking\WIDTH=s32'00000000000000000000000000000001.
+Optimizing module tqvp_matt_pwm.
+<suppressed ~9 debug messages>
+Optimizing module $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.
+<suppressed ~26 debug messages>
+Optimizing module $paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer.
+Optimizing module $paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer.
+Optimizing module falling_edge_detector.
+<suppressed ~1 debug messages>
+Optimizing module rising_edge_detector.
+<suppressed ~1 debug messages>
+Optimizing module tt_um_tqv_peripheral_harness.
+<suppressed ~1 debug messages>
+Optimizing module $paramod\reclocking\WIDTH=s32'00000000000000000000000000001000.
+
+35. Executing FLATTEN pass (flatten design).
+Deleting now unused module $paramod\reclocking\WIDTH=s32'00000000000000000000000000000001.
+Deleting now unused module tqvp_matt_pwm.
+Deleting now unused module $paramod\spi_reg\ADDR_W=s32'00000000000000000000000000000100.
+Deleting now unused module $paramod$e209ecfe3425492cab30fe3f17f0ed06a3da57b8\synchronizer.
+Deleting now unused module $paramod$1b0ac1a71bf6235a146509cbb11b370bdc3def37\synchronizer.
+Deleting now unused module falling_edge_detector.
+Deleting now unused module rising_edge_detector.
+Deleting now unused module $paramod\reclocking\WIDTH=s32'00000000000000000000000000001000.
+<suppressed ~14 debug messages>
+
+36. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+<suppressed ~10 debug messages>
+
+37. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+Removed 15 unused cells and 193 unused wires.
+<suppressed ~20 debug messages>
+
+38. Executing OPT pass (performing simple optimizations).
+
+38.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+38.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+<suppressed ~87 debug messages>
+Removed a total of 29 cells.
+
+38.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_tqv_peripheral_harness..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+    dead port 1/2 on $mux $flatten\i_spi_reg.$procmux$1032.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1034.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1041.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1048.
+    dead port 1/2 on $mux $flatten\i_spi_reg.$procmux$1054.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1054.
+    dead port 1/2 on $mux $flatten\i_spi_reg.$procmux$1057.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1057.
+    dead port 1/2 on $mux $flatten\i_spi_reg.$procmux$1060.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1060.
+    dead port 1/2 on $mux $flatten\i_spi_reg.$procmux$1062.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1062.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1068.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1071.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1073.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1081.
+    dead port 1/2 on $mux $flatten\i_spi_reg.$procmux$1091.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1093.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1102.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1111.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1121.
+    dead port 1/2 on $mux $flatten\i_spi_reg.$procmux$1001.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1003.
+    dead port 1/2 on $mux $flatten\i_spi_reg.$procmux$1010.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1012.
+    dead port 1/2 on $mux $flatten\i_spi_reg.$procmux$998.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1018.
+    dead port 2/2 on $mux $flatten\i_spi_reg.$procmux$1024.
+Removed 28 multiplexer ports.
+<suppressed ~17 debug messages>
+
+38.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_tqv_peripheral_harness.
+Performed a total of 0 changes.
+
+38.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+<suppressed ~12 debug messages>
+Removed a total of 4 cells.
+
+38.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+38.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+Removed 0 unused cells and 61 unused wires.
+<suppressed ~7 debug messages>
+
+38.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+38.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+38.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_tqv_peripheral_harness..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~20 debug messages>
+
+38.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_tqv_peripheral_harness.
+Performed a total of 0 changes.
+
+38.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+38.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+38.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+
+38.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+38.16. Finished OPT passes. (There is nothing left to do.)
+
+39. Executing FSM pass (extract and optimize FSM).
+
+39.1. Executing FSM_DETECT pass (finding FSMs in design).
+Not marking tt_um_tqv_peripheral_harness.i_spi_reg.state as FSM state register:
+    Circuit seems to be self-resetting.
+
+39.2. Executing FSM_EXTRACT pass (extracting FSM from design).
+
+39.3. Executing FSM_OPT pass (simple optimizations of FSMs).
+
+39.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+
+39.5. Executing FSM_OPT pass (simple optimizations of FSMs).
+
+39.6. Executing FSM_RECODE pass (re-assigning FSM state encoding).
+
+39.7. Executing FSM_INFO pass (dumping all available information on FSM cells).
+
+39.8. Executing FSM_MAP pass (mapping FSMs to basic logic).
+
+40. Executing OPT pass (performing simple optimizations).
+
+40.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+40.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+40.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_tqv_peripheral_harness..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~20 debug messages>
+
+40.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_tqv_peripheral_harness.
+Performed a total of 0 changes.
+
+40.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+40.6. Executing OPT_DFF pass (perform DFF optimizations).
+Adding SRST signal on $flatten\user_peripheral.$procdff$1156 ($dff) from module tt_um_tqv_peripheral_harness (D = $flatten\user_peripheral.$procmux$939_Y, Q = \user_peripheral.strobe_period, rval = 8'00000000).
+Adding EN signal on $auto$ff.cc:266:slice$1167 ($sdff) from module tt_um_tqv_peripheral_harness (D = \i_spi_reg.txn_buffer, Q = \user_peripheral.strobe_period).
+Adding SRST signal on $flatten\user_peripheral.$procdff$1155 ($dff) from module tt_um_tqv_peripheral_harness (D = $flatten\user_peripheral.$procmux$947_Y, Q = \user_peripheral.pwm_level_1, rval = 8'00000000).
+Adding EN signal on $auto$ff.cc:266:slice$1171 ($sdff) from module tt_um_tqv_peripheral_harness (D = \i_spi_reg.txn_buffer, Q = \user_peripheral.pwm_level_1).
+Adding SRST signal on $flatten\user_peripheral.$procdff$1154 ($dff) from module tt_um_tqv_peripheral_harness (D = $flatten\user_peripheral.$procmux$956_Y, Q = \user_peripheral.pwm_level_0, rval = 8'00000000).
+Adding EN signal on $auto$ff.cc:266:slice$1175 ($sdff) from module tt_um_tqv_peripheral_harness (D = \i_spi_reg.txn_buffer, Q = \user_peripheral.pwm_level_0).
+Adding SRST signal on $flatten\user_peripheral.$procdff$1153 ($dff) from module tt_um_tqv_peripheral_harness (D = $flatten\user_peripheral.$add$/openlane/designs/DP_1/peripheral.v:62$787_Y, Q = \user_peripheral.strobe_count, rval = 16'0000000000000000).
+Adding SRST signal on $flatten\user_peripheral.$procdff$1152 ($dff) from module tt_um_tqv_peripheral_harness (D = $flatten\user_peripheral.$procmux$916_Y, Q = \user_peripheral.pwm_out_1, rval = 1'0).
+Adding EN signal on $auto$ff.cc:266:slice$1184 ($sdff) from module tt_um_tqv_peripheral_harness (D = $flatten\user_peripheral.$lt$/openlane/designs/DP_1/peripheral.v:79$792_Y, Q = \user_peripheral.pwm_out_1).
+Adding SRST signal on $flatten\user_peripheral.$procdff$1151 ($dff) from module tt_um_tqv_peripheral_harness (D = $flatten\user_peripheral.$procmux$921_Y, Q = \user_peripheral.pwm_out_0, rval = 1'0).
+Adding EN signal on $auto$ff.cc:266:slice$1186 ($sdff) from module tt_um_tqv_peripheral_harness (D = $flatten\user_peripheral.$lt$/openlane/designs/DP_1/peripheral.v:78$791_Y, Q = \user_peripheral.pwm_out_0).
+Adding SRST signal on $flatten\user_peripheral.$procdff$1150 ($dff) from module tt_um_tqv_peripheral_harness (D = $flatten\user_peripheral.$procmux$926_Y, Q = \user_peripheral.pwm_count, rval = 8'00000000).
+Adding EN signal on $auto$ff.cc:266:slice$1188 ($sdff) from module tt_um_tqv_peripheral_harness (D = $flatten\user_peripheral.$add$/openlane/designs/DP_1/peripheral.v:74$790_Y, Q = \user_peripheral.pwm_count).
+Adding EN signal on $flatten\i_spi_reg.$procdff$1162 ($adff) from module tt_um_tqv_peripheral_harness (D = \i_spi_reg.next_state, Q = \i_spi_reg.state).
+Adding EN signal on $flatten\i_spi_reg.$procdff$1161 ($adff) from module tt_um_tqv_peripheral_harness (D = $flatten\i_spi_reg.$0\txn_buffer[7:0], Q = \i_spi_reg.txn_buffer).
+Adding EN signal on $flatten\i_spi_reg.$procdff$1160 ($adff) from module tt_um_tqv_peripheral_harness (D = $flatten\i_spi_reg.$0\buffer_counter[3:0], Q = \i_spi_reg.buffer_counter).
+Adding EN signal on $flatten\i_spi_reg.$procdff$1159 ($adff) from module tt_um_tqv_peripheral_harness (D = \i_spi_reg.txn_buffer [7], Q = \i_spi_reg.reg_rw).
+Adding EN signal on $flatten\i_spi_reg.$procdff$1158 ($adff) from module tt_um_tqv_peripheral_harness (D = \i_spi_reg.txn_buffer [3:0], Q = \i_spi_reg.addr).
+
+40.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+Removed 19 unused cells and 19 unused wires.
+<suppressed ~20 debug messages>
+
+40.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+<suppressed ~2 debug messages>
+
+40.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+40.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_tqv_peripheral_harness..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~11 debug messages>
+
+40.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_tqv_peripheral_harness.
+Performed a total of 0 changes.
+
+40.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+40.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+40.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+
+40.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+40.16. Finished OPT passes. (There is nothing left to do.)
+
+41. Executing WREDUCE pass (reducing word size of cells).
+Removed top 3 bits (of 4) from port B of cell tt_um_tqv_peripheral_harness.$flatten\user_peripheral.$eq$/openlane/designs/DP_1/peripheral.v:49$779 ($eq).
+Removed top 2 bits (of 4) from port B of cell tt_um_tqv_peripheral_harness.$flatten\user_peripheral.$eq$/openlane/designs/DP_1/peripheral.v:50$780 ($eq).
+Removed top 1 bits (of 3) from port B of cell tt_um_tqv_peripheral_harness.$flatten\i_spi_reg.$procmux$1035_CMP0 ($eq).
+Removed top 1 bits (of 3) from port B of cell tt_um_tqv_peripheral_harness.$flatten\i_spi_reg.$procmux$1063_CMP0 ($eq).
+Removed top 2 bits (of 3) from port B of cell tt_um_tqv_peripheral_harness.$flatten\i_spi_reg.$procmux$1094_CMP0 ($eq).
+Removed top 1 bits (of 2) from port B of cell tt_um_tqv_peripheral_harness.$auto$opt_dff.cc:195:make_patterns_logic$1194 ($ne).
+
+42. Executing PEEPOPT pass (run peephole optimizers).
+
+43. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+
+44. Executing ALUMACC pass (create $alu and $macc cells).
+Extracting $alu and $macc cells in module tt_um_tqv_peripheral_harness:
+  creating $macc model for $flatten\i_spi_reg.$add$/openlane/designs/DP_1/spi_reg.sv:177$884 ($add).
+  creating $macc model for $flatten\user_peripheral.$add$/openlane/designs/DP_1/peripheral.v:62$787 ($add).
+  creating $macc model for $flatten\user_peripheral.$add$/openlane/designs/DP_1/peripheral.v:74$790 ($add).
+  creating $alu model for $macc $flatten\user_peripheral.$add$/openlane/designs/DP_1/peripheral.v:74$790.
+  creating $alu model for $macc $flatten\user_peripheral.$add$/openlane/designs/DP_1/peripheral.v:62$787.
+  creating $alu model for $macc $flatten\i_spi_reg.$add$/openlane/designs/DP_1/spi_reg.sv:177$884.
+  creating $alu model for $flatten\user_peripheral.$ge$/openlane/designs/DP_1/peripheral.v:54$784 ($ge): new $alu
+  creating $alu model for $flatten\user_peripheral.$lt$/openlane/designs/DP_1/peripheral.v:78$791 ($lt): new $alu
+  creating $alu model for $flatten\user_peripheral.$lt$/openlane/designs/DP_1/peripheral.v:79$792 ($lt): new $alu
+  creating $alu cell for $flatten\user_peripheral.$lt$/openlane/designs/DP_1/peripheral.v:79$792: $auto$alumacc.cc:485:replace_alu$1212
+  creating $alu cell for $flatten\user_peripheral.$lt$/openlane/designs/DP_1/peripheral.v:78$791: $auto$alumacc.cc:485:replace_alu$1217
+  creating $alu cell for $flatten\user_peripheral.$ge$/openlane/designs/DP_1/peripheral.v:54$784: $auto$alumacc.cc:485:replace_alu$1222
+  creating $alu cell for $flatten\i_spi_reg.$add$/openlane/designs/DP_1/spi_reg.sv:177$884: $auto$alumacc.cc:485:replace_alu$1231
+  creating $alu cell for $flatten\user_peripheral.$add$/openlane/designs/DP_1/peripheral.v:62$787: $auto$alumacc.cc:485:replace_alu$1234
+  creating $alu cell for $flatten\user_peripheral.$add$/openlane/designs/DP_1/peripheral.v:74$790: $auto$alumacc.cc:485:replace_alu$1237
+  created 6 $alu and 0 $macc cells.
+
+45. Executing SHARE pass (SAT-based resource sharing).
+
+46. Executing OPT pass (performing simple optimizations).
+
+46.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+46.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+46.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_tqv_peripheral_harness..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~11 debug messages>
+
+46.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_tqv_peripheral_harness.
+    New input vector for $reduce_or cell $auto$opt_dff.cc:254:combine_resets$1183: { $auto$rtlil.cc:2399:Not$1181 $auto$rtlil.cc:2402:ReduceAnd$1228 $auto$rtlil.cc:2399:Not$1226 }
+  Optimizing cells in module \tt_um_tqv_peripheral_harness.
+Performed a total of 1 changes.
+
+46.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+46.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+46.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+Removed 0 unused cells and 3 unused wires.
+<suppressed ~1 debug messages>
+
+46.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+46.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+46.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_tqv_peripheral_harness..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~11 debug messages>
+
+46.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_tqv_peripheral_harness.
+Performed a total of 0 changes.
+
+46.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+46.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+46.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+
+46.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+46.16. Finished OPT passes. (There is nothing left to do.)
+
+47. Executing MEMORY pass.
+
+47.1. Executing OPT_MEM pass (optimize memories).
+Performed a total of 0 transformations.
+
+47.2. Executing OPT_MEM_PRIORITY pass (removing unnecessary memory write priority relations).
+Performed a total of 0 transformations.
+
+47.3. Executing OPT_MEM_FEEDBACK pass (finding memory read-to-write feedback paths).
+
+47.4. Executing MEMORY_BMUX2ROM pass (converting muxes to ROMs).
+
+47.5. Executing MEMORY_DFF pass (merging $dff cells to $memrd).
+
+47.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+
+47.7. Executing MEMORY_SHARE pass (consolidating $memrd/$memwr cells).
+
+47.8. Executing OPT_MEM_WIDEN pass (optimize memories where all ports are wide).
+Performed a total of 0 transformations.
+
+47.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+
+47.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+48. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+
+49. Executing OPT pass (performing simple optimizations).
+
+49.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+<suppressed ~12 debug messages>
+
+49.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+49.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+49.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+Removed 0 unused cells and 7 unused wires.
+<suppressed ~1 debug messages>
+
+49.5. Finished fast OPT passes.
+
+50. Executing MEMORY_MAP pass (converting memories to logic and flip-flops).
+
+51. Executing OPT pass (performing simple optimizations).
+
+51.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+51.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+51.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_tqv_peripheral_harness..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~4 debug messages>
+
+51.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_tqv_peripheral_harness.
+    Consolidated identical input bits for $mux cell $flatten\i_spi_reg.$procmux$1079:
+      Old ports: A=3'100, B=3'011, Y=$flatten\i_spi_reg.$5\next_state[2:0]
+      New ports: A=2'10, B=2'01, Y={ $flatten\i_spi_reg.$5\next_state[2:0] [2] $flatten\i_spi_reg.$5\next_state[2:0] [0] }
+      New connections: $flatten\i_spi_reg.$5\next_state[2:0] [1] = $flatten\i_spi_reg.$5\next_state[2:0] [0]
+    New ctrl vector for $pmux cell $flatten\i_spi_reg.$procmux$1124: { $flatten\i_spi_reg.$procmux$1122_CMP $flatten\i_spi_reg.$procmux$1094_CMP $flatten\i_spi_reg.$procmux$1063_CMP $auto$opt_reduce.cc:134:opt_pmux$1241 }
+  Optimizing cells in module \tt_um_tqv_peripheral_harness.
+Performed a total of 2 changes.
+
+51.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+51.6. Executing OPT_SHARE pass.
+
+51.7. Executing OPT_DFF pass (perform DFF optimizations).
+
+51.8. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+
+51.9. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+51.10. Rerunning OPT passes. (Maybe there is more to do..)
+
+51.11. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_tqv_peripheral_harness..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~4 debug messages>
+
+51.12. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_tqv_peripheral_harness.
+Performed a total of 0 changes.
+
+51.13. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+51.14. Executing OPT_SHARE pass.
+
+51.15. Executing OPT_DFF pass (perform DFF optimizations).
+
+51.16. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+
+51.17. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+51.18. Finished OPT passes. (There is nothing left to do.)
+
+52. Executing TECHMAP pass (map to technology primitives).
+
+52.1. Executing Verilog-2005 frontend: /build/bin/../share/yosys/techmap.v
+Parsing Verilog input from `/build/bin/../share/yosys/techmap.v' to AST representation.
+Generating RTLIL representation for module `\_90_simplemap_bool_ops'.
+Generating RTLIL representation for module `\_90_simplemap_reduce_ops'.
+Generating RTLIL representation for module `\_90_simplemap_logic_ops'.
+Generating RTLIL representation for module `\_90_simplemap_compare_ops'.
+Generating RTLIL representation for module `\_90_simplemap_various'.
+Generating RTLIL representation for module `\_90_simplemap_registers'.
+Generating RTLIL representation for module `\_90_shift_ops_shr_shl_sshl_sshr'.
+Generating RTLIL representation for module `\_90_shift_shiftx'.
+Generating RTLIL representation for module `\_90_fa'.
+Generating RTLIL representation for module `\_90_lcu'.
+Generating RTLIL representation for module `\_90_alu'.
+Generating RTLIL representation for module `\_90_macc'.
+Generating RTLIL representation for module `\_90_alumacc'.
+Generating RTLIL representation for module `\$__div_mod_u'.
+Generating RTLIL representation for module `\$__div_mod_trunc'.
+Generating RTLIL representation for module `\_90_div'.
+Generating RTLIL representation for module `\_90_mod'.
+Generating RTLIL representation for module `\$__div_mod_floor'.
+Generating RTLIL representation for module `\_90_divfloor'.
+Generating RTLIL representation for module `\_90_modfloor'.
+Generating RTLIL representation for module `\_90_pow'.
+Generating RTLIL representation for module `\_90_pmux'.
+Generating RTLIL representation for module `\_90_demux'.
+Generating RTLIL representation for module `\_90_lut'.
+Successfully finished Verilog frontend.
+
+52.2. Continuing TECHMAP pass.
+Using template $paramod$a1bc51c02ce12ac21eb18988e83292af48ed7d72\_90_alu for cells of type $alu.
+Using extmapper simplemap for cells of type $not.
+Using extmapper simplemap for cells of type $reduce_and.
+Using extmapper simplemap for cells of type $reduce_or.
+Using extmapper simplemap for cells of type $sdff.
+Using extmapper simplemap for cells of type $dff.
+Using extmapper simplemap for cells of type $logic_not.
+Using extmapper simplemap for cells of type $eq.
+Using extmapper simplemap for cells of type $mux.
+Using template $paramod$32a7b7b86c07519b7537abc18e96f0331f97914d\_90_alu for cells of type $alu.
+Using template $paramod$c3cd1564c35d873179656addd6052d7ea8b6d991\_90_alu for cells of type $alu.
+Using template $paramod$1f812f0514ea3255703342654e053e2c502325cc\_90_alu for cells of type $alu.
+Using extmapper simplemap for cells of type $sdffe.
+Using extmapper simplemap for cells of type $adffe.
+Using template $paramod$2af30114e9bd4ccb04dad757b3f0a8f6bf0615b0\_90_alu for cells of type $alu.
+Using extmapper simplemap for cells of type $adff.
+Using extmapper simplemap for cells of type $and.
+Using template $paramod$fc16b9f758000d363d24f130038bd99b46b4fa1b\_90_pmux for cells of type $pmux.
+Using extmapper simplemap for cells of type $ne.
+Using extmapper simplemap for cells of type $reduce_bool.
+Using template $paramod$d31bf4d7d72e59528d18fbd4f322e9d608532043\_90_pmux for cells of type $pmux.
+Using template $paramod\_90_lcu\WIDTH=32'00000000000000000000000000001000 for cells of type $lcu.
+Using extmapper simplemap for cells of type $pos.
+Using extmapper simplemap for cells of type $xor.
+Using template $paramod\_90_lcu\WIDTH=32'00000000000000000000000000010000 for cells of type $lcu.
+Using template $paramod\_90_lcu\WIDTH=32'00000000000000000000000000000100 for cells of type $lcu.
+Using extmapper simplemap for cells of type $or.
+No more expansions possible.
+<suppressed ~914 debug messages>
+
+53. Executing OPT pass (performing simple optimizations).
+
+53.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+<suppressed ~323 debug messages>
+
+53.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+<suppressed ~126 debug messages>
+Removed a total of 42 cells.
+
+53.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+53.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+Removed 81 unused cells and 365 unused wires.
+<suppressed ~82 debug messages>
+
+53.5. Finished fast OPT passes.
+
+54. Executing ABC pass (technology mapping using ABC).
+
+54.1. Extracting gate netlist of module `\tt_um_tqv_peripheral_harness' to `<abc-temp-dir>/input.blif'..
+Extracted 361 gates and 438 wires to a netlist network with 75 inputs and 52 outputs.
+
+54.1.1. Executing ABC.
+Running ABC command: "<yosys-exe-dir>/yosys-abc" -s -f <abc-temp-dir>/abc.script 2>&1
+ABC: ABC command line: "source <abc-temp-dir>/abc.script".
+ABC: 
+ABC: + read_blif <abc-temp-dir>/input.blif 
+ABC: + read_library <abc-temp-dir>/stdcells.genlib 
+ABC: Entered genlib library with 13 gates from file "<abc-temp-dir>/stdcells.genlib".
+ABC: + strash 
+ABC: + dretime 
+ABC: + map 
+ABC: + write_blif <abc-temp-dir>/output.blif 
+
+54.1.2. Re-integrating ABC results.
+ABC RESULTS:               NOR cells:        6
+ABC RESULTS:               MUX cells:       32
+ABC RESULTS:               NOT cells:       28
+ABC RESULTS:             ORNOT cells:       43
+ABC RESULTS:                OR cells:       31
+ABC RESULTS:               AND cells:       18
+ABC RESULTS:              NAND cells:       18
+ABC RESULTS:              XNOR cells:       14
+ABC RESULTS:            ANDNOT cells:      100
+ABC RESULTS:               XOR cells:       33
+ABC RESULTS:        internal signals:      311
+ABC RESULTS:           input signals:       75
+ABC RESULTS:          output signals:       52
+Removing temp directory.
+
+55. Executing OPT pass (performing simple optimizations).
+
+55.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+<suppressed ~7 debug messages>
+
+55.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+55.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+55.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+Removed 1 unused cells and 269 unused wires.
+<suppressed ~16 debug messages>
+
+55.5. Finished fast OPT passes.
+
+56. Executing HIERARCHY pass (managing design hierarchy).
+
+56.1. Analyzing design hierarchy..
+Top module:  \tt_um_tqv_peripheral_harness
+
+56.2. Analyzing design hierarchy..
+Top module:  \tt_um_tqv_peripheral_harness
+Removed 0 unused modules.
+
+57. Printing statistics.
+
+=== tt_um_tqv_peripheral_harness ===
+
+   Number of wires:                412
+   Number of wire bits:            637
+   Number of public wires:         123
+   Number of public wire bits:     297
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                402
+     $_ANDNOT_                     100
+     $_AND_                         18
+     $_DFFE_PN0P_                   20
+     $_DFF_N_                        1
+     $_DFF_PN0_                      3
+     $_DFF_P_                        6
+     $_MUX_                         32
+     $_NAND_                        18
+     $_NOR_                          6
+     $_NOT_                         27
+     $_ORNOT_                       43
+     $_OR_                          31
+     $_SDFFE_PN0P_                  34
+     $_SDFF_PP0_                    16
+     $_XNOR_                        14
+     $_XOR_                         33
+
+58. Executing CHECK pass (checking for obvious problems).
+Checking module tt_um_tqv_peripheral_harness...
+Found and reported 0 problems.
+
+59. Generating Graphviz representation of design.
+Writing dot description to `/openlane/designs/DP_1/runs/RUN_2026.01.26_17.26.25/tmp/synthesis/post_techmap.dot'.
+Dumping module tt_um_tqv_peripheral_harness to page 1.
+
+60. Executing SHARE pass (SAT-based resource sharing).
+
+61. Executing OPT pass (performing simple optimizations).
+
+61.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+61.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+61.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_tqv_peripheral_harness..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+
+61.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_tqv_peripheral_harness.
+Performed a total of 0 changes.
+
+61.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_tqv_peripheral_harness'.
+Removed a total of 0 cells.
+
+61.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+61.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+
+61.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_tqv_peripheral_harness.
+
+61.9. Finished OPT passes. (There is nothing left to do.)
+
+62. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+Removed 0 unused cells and 89 unused wires.
+<suppressed ~89 debug messages>
+
+63. Printing statistics.
+
+=== tt_um_tqv_peripheral_harness ===
+
+   Number of wires:                323
+   Number of wire bits:            469
+   Number of public wires:          34
+   Number of public wire bits:     129
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                402
+     $_ANDNOT_                     100
+     $_AND_                         18
+     $_DFFE_PN0P_                   20
+     $_DFF_N_                        1
+     $_DFF_PN0_                      3
+     $_DFF_P_                        6
+     $_MUX_                         32
+     $_NAND_                        18
+     $_NOR_                          6
+     $_NOT_                         27
+     $_ORNOT_                       43
+     $_OR_                          31
+     $_SDFFE_PN0P_                  34
+     $_SDFF_PP0_                    16
+     $_XNOR_                        14
+     $_XOR_                         33
+
+mapping tbuf
+
+64. Executing TECHMAP pass (map to technology primitives).
+
+64.1. Executing Verilog-2005 frontend: /home/nashvader/.ciel/sky130A/libs.tech/openlane/sky130_fd_sc_hd/tribuff_map.v
+Parsing Verilog input from `/home/nashvader/.ciel/sky130A/libs.tech/openlane/sky130_fd_sc_hd/tribuff_map.v' to AST representation.
+Generating RTLIL representation for module `\$_TBUF_'.
+Successfully finished Verilog frontend.
+
+64.2. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~3 debug messages>
+
+65. Executing SIMPLEMAP pass (map simple cells to gate primitives).
+
+66. Executing TECHMAP pass (map to technology primitives).
+
+66.1. Executing Verilog-2005 frontend: /home/nashvader/.ciel/sky130A/libs.tech/openlane/sky130_fd_sc_hd/latch_map.v
+Parsing Verilog input from `/home/nashvader/.ciel/sky130A/libs.tech/openlane/sky130_fd_sc_hd/latch_map.v' to AST representation.
+Generating RTLIL representation for module `\$_DLATCH_P_'.
+Generating RTLIL representation for module `\$_DLATCH_N_'.
+Successfully finished Verilog frontend.
+
+66.2. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~4 debug messages>
+
+67. Executing SIMPLEMAP pass (map simple cells to gate primitives).
+
+68. Executing DFFLIBMAP pass (mapping DFF cells to sequential cells from liberty file).
+  cell sky130_fd_sc_hd__dfxtp_2 (noninv, pins=3, area=21.27) is a direct match for cell type $_DFF_P_.
+  cell sky130_fd_sc_hd__dfrtp_2 (noninv, pins=4, area=26.28) is a direct match for cell type $_DFF_PN0_.
+  cell sky130_fd_sc_hd__dfstp_2 (noninv, pins=4, area=26.28) is a direct match for cell type $_DFF_PN1_.
+  cell sky130_fd_sc_hd__dfbbn_2 (noninv, pins=6, area=35.03) is a direct match for cell type $_DFFSR_NNN_.
+  final dff cell mappings:
+    unmapped dff cell: $_DFF_N_
+    \sky130_fd_sc_hd__dfxtp_2 _DFF_P_ (.CLK( C), .D( D), .Q( Q));
+    unmapped dff cell: $_DFF_NN0_
+    unmapped dff cell: $_DFF_NN1_
+    unmapped dff cell: $_DFF_NP0_
+    unmapped dff cell: $_DFF_NP1_
+    \sky130_fd_sc_hd__dfrtp_2 _DFF_PN0_ (.CLK( C), .D( D), .Q( Q), .RESET_B( R));
+    \sky130_fd_sc_hd__dfstp_2 _DFF_PN1_ (.CLK( C), .D( D), .Q( Q), .SET_B( R));
+    unmapped dff cell: $_DFF_PP0_
+    unmapped dff cell: $_DFF_PP1_
+    \sky130_fd_sc_hd__dfbbn_2 _DFFSR_NNN_ (.CLK_N( C), .D( D), .Q( Q), .Q_N(~Q), .RESET_B( R), .SET_B( S));
+    unmapped dff cell: $_DFFSR_NNP_
+    unmapped dff cell: $_DFFSR_NPN_
+    unmapped dff cell: $_DFFSR_NPP_
+    unmapped dff cell: $_DFFSR_PNN_
+    unmapped dff cell: $_DFFSR_PNP_
+    unmapped dff cell: $_DFFSR_PPN_
+    unmapped dff cell: $_DFFSR_PPP_
+
+68.1. Executing DFFLEGALIZE pass (convert FFs to types supported by the target).
+Mapping DFF cells in module `\tt_um_tqv_peripheral_harness':
+  mapped 23 $_DFF_PN0_ cells to \sky130_fd_sc_hd__dfrtp_2 cells.
+  mapped 57 $_DFF_P_ cells to \sky130_fd_sc_hd__dfxtp_2 cells.
+
+69. Printing statistics.
+
+=== tt_um_tqv_peripheral_harness ===
+
+   Number of wires:                428
+   Number of wire bits:            574
+   Number of public wires:          34
+   Number of public wire bits:     129
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                507
+     $_ANDNOT_                     100
+     $_AND_                         18
+     $_MUX_                        136
+     $_NAND_                        18
+     $_NOR_                          6
+     $_NOT_                         28
+     $_ORNOT_                       43
+     $_OR_                          31
+     $_XNOR_                        14
+     $_XOR_                         33
+     sky130_fd_sc_hd__dfrtp_2       23
+     sky130_fd_sc_hd__dfxtp_2       57
+
+[INFO]: USING STRATEGY AREA 0
+
+70. Executing ABC pass (technology mapping using ABC).
+
+70.1. Extracting gate netlist of module `\tt_um_tqv_peripheral_harness' to `/tmp/yosys-abc-9BK5Yl/input.blif'..
+Extracted 427 gates and 506 wires to a netlist network with 78 inputs and 73 outputs.
+
+70.1.1. Executing ABC.
+Running ABC command: "/build/bin/yosys-abc" -s -f /tmp/yosys-abc-9BK5Yl/abc.script 2>&1
+ABC: ABC command line: "source /tmp/yosys-abc-9BK5Yl/abc.script".
+ABC: 
+ABC: + read_blif /tmp/yosys-abc-9BK5Yl/input.blif 
+ABC: + read_lib -w /openlane/designs/DP_1/runs/RUN_2026.01.26_17.26.25/tmp/synthesis/trimmed.lib 
+ABC: Parsing finished successfully.  Parsing time =     0.03 sec
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dfbbn_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dfrbp_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dfrtp_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dfrtp_4".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dfsbp_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dfstp_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dfstp_4".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dfxbp_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dfxtp_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dfxtp_4".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dlxtn_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dlxtn_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dlxtn_4".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sky130_fd_sc_hd__dlxtp_1".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sky130_fd_sc_hd__ebufn_2".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sky130_fd_sc_hd__ebufn_4".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sky130_fd_sc_hd__ebufn_8".
+ABC: Library "sky130A_merged" from "/openlane/designs/DP_1/runs/RUN_2026.01.26_17.26.25/tmp/synthesis/trimmed.lib" has 175 cells (17 skipped: 14 seq; 3 tri-state; 0 no func; 0 dont_use).  Time =     0.05 sec
+ABC: Memory =    9.54 MB. Time =     0.05 sec
+ABC: Warning: Detected 2 multi-output gates (for example, "sky130_fd_sc_hd__fa_1").
+ABC: + read_constr -v /openlane/designs/DP_1/runs/RUN_2026.01.26_17.26.25/tmp/synthesis/synthesis.sdc 
+ABC: Setting driving cell to be "sky130_fd_sc_hd__inv_2".
+ABC: Setting output load to be 33.442001.
+ABC: + read_constr /openlane/designs/DP_1/runs/RUN_2026.01.26_17.26.25/tmp/synthesis/synthesis.sdc 
+ABC: + fx 
+ABC: + mfs 
+ABC: + strash 
+ABC: + refactor 
+ABC: + balance 
+ABC: + rewrite 
+ABC: + refactor 
+ABC: + balance 
+ABC: + rewrite 
+ABC: + rewrite -z 
+ABC: + balance 
+ABC: + refactor -z 
+ABC: + rewrite -z 
+ABC: + balance 
+ABC: + retime -D -D 20000.0 -M 5 
+ABC: + scleanup 
+ABC: Error: The network is combinational.
+ABC: + fraig_store 
+ABC: + balance 
+ABC: + fraig_store 
+ABC: + balance 
+ABC: + rewrite 
+ABC: + refactor 
+ABC: + balance 
+ABC: + rewrite 
+ABC: + rewrite -z 
+ABC: + balance 
+ABC: + refactor -z 
+ABC: + rewrite -z 
+ABC: + balance 
+ABC: + fraig_store 
+ABC: + balance 
+ABC: + rewrite 
+ABC: + refactor 
+ABC: + balance 
+ABC: + rewrite 
+ABC: + rewrite -z 
+ABC: + balance 
+ABC: + refactor -z 
+ABC: + rewrite -z 
+ABC: + balance 
+ABC: + fraig_store 
+ABC: + balance 
+ABC: + rewrite 
+ABC: + refactor 
+ABC: + balance 
+ABC: + rewrite 
+ABC: + rewrite -z 
+ABC: + balance 
+ABC: + refactor -z 
+ABC: + rewrite -z 
+ABC: + balance 
+ABC: + fraig_store 
+ABC: + fraig_restore 
+ABC: + amap -m -Q 0.1 -F 20 -A 20 -C 5000 
+ABC: + retime -D -D 20000.0 
+ABC: + &get -n 
+ABC: + &st 
+ABC: + &dch 
+ABC: + &nf 
+ABC: + &put 
+ABC: + buffer -N 10 -S 750.0 
+ABC: + upsize -D 20000.0 
+ABC: Current delay (1805.49 ps) does not exceed the target delay (20000.00 ps). Upsizing is not performed.
+ABC: + dnsize -D 20000.0 
+ABC: + stime -p 
+ABC: WireLoad = "none"  Gates =    302 ( 18.2 %)   Cap = 11.2 ff (  3.9 %)   Area =     2303.46 ( 79.1 %)   Delay =  2010.92 ps  ( 15.9 %)               
+ABC: Path  0 --      63 : 0    7 pi                       A =   0.00  Df =  52.1  -29.1 ps  S =  78.2 ps  Cin =  0.0 ff  Cout =  15.7 ff  Cmax =   0.0 ff  G =    0  
+ABC: Path  1 --     177 : 2    2 sky130_fd_sc_hd__or2b_2  A =   8.76  Df = 349.2 -173.9 ps  S =  55.7 ps  Cin =  1.6 ff  Cout =   4.1 ff  Cmax = 312.2 ff  G =  249  
+ABC: Path  2 --     179 : 3    1 sky130_fd_sc_hd__a21bo_2 A =  10.01  Df = 555.5  -72.5 ps  S =  33.2 ps  Cin =  2.0 ff  Cout =   2.5 ff  Cmax = 288.4 ff  G =  114  
+ABC: Path  3 --     180 : 4    1 sky130_fd_sc_hd__a22o_2  A =  10.01  Df = 766.3 -170.6 ps  S =  37.9 ps  Cin =  2.3 ff  Cout =   2.5 ff  Cmax = 301.2 ff  G =  101  
+ABC: Path  4 --     182 : 4    2 sky130_fd_sc_hd__a22o_2  A =  10.01  Df =1027.5 -275.3 ps  S =  55.7 ps  Cin =  2.3 ff  Cout =   7.1 ff  Cmax = 301.2 ff  G =  289  
+ABC: Path  5 --     189 : 2    7 sky130_fd_sc_hd__nand2_2 A =   6.26  Df =1138.9  -65.8 ps  S = 121.8 ps  Cin =  4.4 ff  Cout =  20.3 ff  Cmax = 295.7 ff  G =  437  
+ABC: Path  6 --     229 : 1   10 sky130_fd_sc_hd__buf_1   A =   3.75  Df =1486.0 -181.8 ps  S = 400.4 ps  Cin =  2.1 ff  Cout =  33.7 ff  Cmax = 130.0 ff  G = 1534  
+ABC: Path  7 --     249 : 2    2 sky130_fd_sc_hd__nand2_2 A =   6.26  Df =1577.9 -160.9 ps  S =  92.6 ps  Cin =  4.4 ff  Cout =   6.6 ff  Cmax = 295.7 ff  G =  143  
+ABC: Path  8 --     250 : 3    1 sky130_fd_sc_hd__and3_2  A =   7.51  Df =1796.5 -211.5 ps  S =  42.2 ps  Cin =  1.5 ff  Cout =   2.2 ff  Cmax = 309.5 ff  G =  141  
+ABC: Path  9 --     251 : 1    1 sky130_fd_sc_hd__buf_1   A =   3.75  Df =2010.9 -103.6 ps  S = 396.7 ps  Cin =  2.1 ff  Cout =  33.4 ff  Cmax = 130.0 ff  G = 1590  
+ABC: Start-point = pi62 (\user_peripheral.strobe_count [0]).  End-point = po24 ($auto$rtlil.cc:2607:MuxGate$2851).
+ABC: + print_stats -m 
+ABC: netlist                       : i/o =   78/   73  lat =    0  nd =   302  edge =    785  area =2303.65  delay = 9.00  lev = 9
+ABC: + write_blif /tmp/yosys-abc-9BK5Yl/output.blif 
+
+70.1.2. Re-integrating ABC results.
+ABC RESULTS:   sky130_fd_sc_hd__o2bb2a_2 cells:        1
+ABC RESULTS:   sky130_fd_sc_hd__a21bo_2 cells:        2
+ABC RESULTS:   sky130_fd_sc_hd__a211oi_2 cells:        1
+ABC RESULTS:   sky130_fd_sc_hd__xnor2_2 cells:        1
+ABC RESULTS:          _const0_ cells:        8
+ABC RESULTS:   sky130_fd_sc_hd__a21o_2 cells:        2
+ABC RESULTS:   sky130_fd_sc_hd__a41o_2 cells:        1
+ABC RESULTS:   sky130_fd_sc_hd__and4_2 cells:        3
+ABC RESULTS:   sky130_fd_sc_hd__a31o_2 cells:        6
+ABC RESULTS:   sky130_fd_sc_hd__o22a_2 cells:        3
+ABC RESULTS:   sky130_fd_sc_hd__o221a_2 cells:        6
+ABC RESULTS:   sky130_fd_sc_hd__or4b_2 cells:        1
+ABC RESULTS:   sky130_fd_sc_hd__and3b_2 cells:        5
+ABC RESULTS:   sky130_fd_sc_hd__o21bai_2 cells:        1
+ABC RESULTS:   sky130_fd_sc_hd__o31a_2 cells:        1
+ABC RESULTS:   sky130_fd_sc_hd__and4bb_2 cells:        2
+ABC RESULTS:   sky130_fd_sc_hd__a211o_2 cells:        1
+ABC RESULTS:   sky130_fd_sc_hd__a32o_2 cells:        1
+ABC RESULTS:   sky130_fd_sc_hd__nor3_2 cells:        1
+ABC RESULTS:   sky130_fd_sc_hd__and2b_2 cells:        3
+ABC RESULTS:   sky130_fd_sc_hd__nor4b_2 cells:        2
+ABC RESULTS:   sky130_fd_sc_hd__and2_2 cells:        4
+ABC RESULTS:   sky130_fd_sc_hd__nand3_2 cells:        1
+ABC RESULTS:   sky130_fd_sc_hd__or4_2 cells:        4
+ABC RESULTS:   sky130_fd_sc_hd__or3b_2 cells:        1
+ABC RESULTS:   sky130_fd_sc_hd__inv_2 cells:       19
+ABC RESULTS:   sky130_fd_sc_hd__or3_2 cells:        1
+ABC RESULTS:   sky130_fd_sc_hd__or2b_2 cells:       13
+ABC RESULTS:   sky130_fd_sc_hd__a22o_2 cells:       21
+ABC RESULTS:   sky130_fd_sc_hd__o21ai_2 cells:        9
+ABC RESULTS:   sky130_fd_sc_hd__o211a_2 cells:       35
+ABC RESULTS:   sky130_fd_sc_hd__mux2_2 cells:       14
+ABC RESULTS:   sky130_fd_sc_hd__buf_1 cells:       36
+ABC RESULTS:   sky130_fd_sc_hd__and3_2 cells:       15
+ABC RESULTS:   sky130_fd_sc_hd__nor2_2 cells:        7
+ABC RESULTS:   sky130_fd_sc_hd__nand4_2 cells:        2
+ABC RESULTS:   sky130_fd_sc_hd__o21a_2 cells:        4
+ABC RESULTS:   sky130_fd_sc_hd__nand2_2 cells:       26
+ABC RESULTS:   sky130_fd_sc_hd__or2_2 cells:       32
+ABC RESULTS:   sky130_fd_sc_hd__a21oi_2 cells:        6
+ABC RESULTS:        internal signals:      355
+ABC RESULTS:           input signals:       78
+ABC RESULTS:          output signals:       73
+Removing temp directory.
+
+71. Executing SETUNDEF pass (replace undef values with defined constants).
+
+72. Executing HILOMAP pass (mapping to constant drivers).
+
+73. Executing SPLITNETS pass (splitting up multi-bit signals).
+
+74. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_tqv_peripheral_harness..
+Removed 0 unused cells and 555 unused wires.
+<suppressed ~9 debug messages>
+
+75. Executing INSBUF pass (insert buffer cells for connected wires).
+Add tt_um_tqv_peripheral_harness/$auto$insbuf.cc:97:execute$3353: \uo_out [6] -> \uo_out [0]
+Add tt_um_tqv_peripheral_harness/$auto$insbuf.cc:97:execute$3354: \uo_out [7] -> \uo_out [1]
+Add tt_um_tqv_peripheral_harness/$auto$insbuf.cc:97:execute$3355: \uo_out [6] -> \uo_out [2]
+Add tt_um_tqv_peripheral_harness/$auto$insbuf.cc:97:execute$3356: \uo_out [7] -> \uo_out [3]
+Add tt_um_tqv_peripheral_harness/$auto$insbuf.cc:97:execute$3357: \uo_out [6] -> \uo_out [4]
+Add tt_um_tqv_peripheral_harness/$auto$insbuf.cc:97:execute$3358: \uo_out [7] -> \uo_out [5]
+
+76. Executing CHECK pass (checking for obvious problems).
+Checking module tt_um_tqv_peripheral_harness...
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [7] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [6] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [5] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [4] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [3] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [2] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [1] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [0] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [7] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [6] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [5] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [4] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [3] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [2] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [1] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [0] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [7] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [6] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [5] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [4] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [3] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [2] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [1] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [0] is used but has no driver.
+Found and reported 24 problems.
+
+77. Printing statistics.
+
+=== tt_um_tqv_peripheral_harness ===
+
+   Number of wires:                387
+   Number of wire bits:            422
+   Number of public wires:          86
+   Number of public wire bits:     121
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                403
+     sky130_fd_sc_hd__a211o_2        1
+     sky130_fd_sc_hd__a211oi_2       1
+     sky130_fd_sc_hd__a21bo_2        2
+     sky130_fd_sc_hd__a21o_2         2
+     sky130_fd_sc_hd__a21oi_2        6
+     sky130_fd_sc_hd__a22o_2        21
+     sky130_fd_sc_hd__a31o_2         6
+     sky130_fd_sc_hd__a32o_2         1
+     sky130_fd_sc_hd__a41o_2         1
+     sky130_fd_sc_hd__and2_2         4
+     sky130_fd_sc_hd__and2b_2        3
+     sky130_fd_sc_hd__and3_2        15
+     sky130_fd_sc_hd__and3b_2        5
+     sky130_fd_sc_hd__and4_2         3
+     sky130_fd_sc_hd__and4bb_2       2
+     sky130_fd_sc_hd__buf_1         36
+     sky130_fd_sc_hd__buf_2          6
+     sky130_fd_sc_hd__conb_1        23
+     sky130_fd_sc_hd__dfrtp_2       23
+     sky130_fd_sc_hd__dfxtp_2       57
+     sky130_fd_sc_hd__inv_2         19
+     sky130_fd_sc_hd__mux2_2        14
+     sky130_fd_sc_hd__nand2_2       26
+     sky130_fd_sc_hd__nand3_2        1
+     sky130_fd_sc_hd__nand4_2        2
+     sky130_fd_sc_hd__nor2_2         7
+     sky130_fd_sc_hd__nor3_2         1
+     sky130_fd_sc_hd__nor4b_2        2
+     sky130_fd_sc_hd__o211a_2       35
+     sky130_fd_sc_hd__o21a_2         4
+     sky130_fd_sc_hd__o21ai_2        9
+     sky130_fd_sc_hd__o21bai_2       1
+     sky130_fd_sc_hd__o221a_2        6
+     sky130_fd_sc_hd__o22a_2         3
+     sky130_fd_sc_hd__o2bb2a_2       1
+     sky130_fd_sc_hd__o31a_2         1
+     sky130_fd_sc_hd__or2_2         32
+     sky130_fd_sc_hd__or2b_2        13
+     sky130_fd_sc_hd__or3_2          1
+     sky130_fd_sc_hd__or3b_2         1
+     sky130_fd_sc_hd__or4_2          4
+     sky130_fd_sc_hd__or4b_2         1
+     sky130_fd_sc_hd__xnor2_2        1
+
+   Chip area for module '\tt_um_tqv_peripheral_harness': 4236.563200
+
+78. Executing Verilog backend.
+Dumping module `\tt_um_tqv_peripheral_harness'.
+
+Warnings: 26 unique messages, 31 total
+End of script. Logfile hash: 1d629c1960, CPU: user 0.58s system 0.02s, MEM: 29.69 MB peak
+Yosys 0.30+48 (git sha1 14d50a176d5, gcc 8.3.1 -fPIC -Os)
+Time spent: 43% 2x abc (0 sec), 10% 25x opt_expr (0 sec), ...

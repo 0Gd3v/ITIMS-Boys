@@ -1,51 +1,78 @@
-# SPDX-FileCopyrightText: © 2025 Tiny Tapeout
-# SPDX-License-Identifier: Apache-2.0
-
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles
-
+from cocotb.triggers import ClockCycles, RisingEdge, FallingEdge
 from tqv import TinyQV
 
-# When submitting your design, change this to 16 + the peripheral number
-# in peripherals.v.  e.g. if your design is i_user_simple00, set this to 16.
-# The peripheral number is not used by the test harness.
+# PERIPHERAL_NUM is 16 for the first "Byte interface peripheral" slot
 PERIPHERAL_NUM = 16
 
 @cocotb.test()
-async def test_project(dut):
-    dut._log.info("Start")
-
-    # Set the clock period to 100 ns (10 MHz)
-    clock = Clock(dut.clk, 100, units="ns")
+async def test_spi_master_full_sequence(dut):
+    """Test the SPI Master: Write data, poll status, and verify output pins."""
+    
+    # 1. Setup Clock (10MHz for simulation clarity)
+    clock = Clock(dut.clk, 100, unit="ns")
     cocotb.start_soon(clock.start())
 
-    # Interact with your design's registers through this TinyQV class.
-    # This will allow the same test to be run when your design is integrated
-    # with TinyQV - the implementation of this class will be replaces with a
-    # different version that uses Risc-V instructions instead of the SPI 
-    # interface to read and write the registers.
+    # 2. Initialize TinyQV test harness 
     tqv = TinyQV(dut, PERIPHERAL_NUM)
+    await tqv.reset()
+    dut._log.info("Reset complete. Starting SPI Master test.")
 
-    # Reset, always start the test by resetting TinyQV
+    # 3. Configure Clock Divider (Addr 2)
+    # Setting divider to 2 means SPI clock will toggle every (2+1) cycles
+    await tqv.write_reg(2, 2)
+    
+    # 4. Initiate SPI Transmission (Addr 0)
+    # We will send 0xA5 (Binary: 10100101)
+    test_data = 0xA5
+    dut._log.info(f"Writing 0x{test_data:02X} to SPI data register...")
+    await tqv.write_reg(0, test_data)
+
+    # 5. Poll Status Register (Addr 1) until Busy bit is 0
+    busy = 1
+    timeout = 0
+    while busy:
+        status = await tqv.read_reg(1)
+        busy = status & 0x01
+        timeout += 1
+        if timeout > 200:
+            raise Exception("Timeout waiting for SPI busy bit to clear!")
+        await ClockCycles(dut.clk, 10)
+    
+    dut._log.info("Transmission finished (Busy bit cleared).")
+
+    # 6. Functional Verification of Pins
+    # Based on uo_out = {5'b0, CS, MOSI, CLK}
+    # We expect CS to be high (1) now that transmission is done.
+    current_pins = int(dut.uo_out.value)
+    cs_pin = (current_pins >> 2) & 0x01
+    assert cs_pin == 1, f"Expected CS high after transfer, got {cs_pin}"
+    
+    dut._log.info("SPI Master Test Passed!")
+
+@cocotb.test()
+async def test_spi_timing(dut):
+    """Detailed timing check for the first bit of SPI transmission."""
+    clock = Clock(dut.clk, 100, unit="ns")
+    cocotb.start_soon(clock.start())
+    tqv = TinyQV(dut, PERIPHERAL_NUM)
     await tqv.reset()
 
-    dut._log.info("Test project behavior")
-
-    # Test register write and read back
-    await tqv.write_reg(0, 20)
-    assert await tqv.read_reg(0) == 20
-
-    # Set an input value, in the example this will be added to the register value
-    dut.ui_in.value = 30
-
-    # Wait for two clock cycles to see the output values, because ui_in is synchronized over two clocks,
-    # and a further clock is required for the output to propagate.
-    await ClockCycles(dut.clk, 3)
-
-    # The following assertion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 50
-
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+    # Send 0x80 (10000000) - MOSI should be high for the first bit
+    await tqv.write_reg(0, 0x80)
+    
+    # Wait for CS to go low
+    while (int(dut.uo_out.value) >> 2) & 0x01:
+        await RisingEdge(dut.clk)
+    
+    dut._log.info("CS went low, checking first bit (MOSI should be 1)")
+    
+    # Sample at the first rising edge of the SPI clock (Bit 0 of uo_out)
+    while not (int(dut.uo_out.value) & 0x01):
+        await RisingEdge(dut.clk)
+        
+    pins = int(dut.uo_out.value)
+    mosi = (pins >> 1) & 0x01
+    assert mosi == 1, "MOSI should be 1 for the MSB of 0x80"
+    dut._log.info("Timing for first bit verified.")

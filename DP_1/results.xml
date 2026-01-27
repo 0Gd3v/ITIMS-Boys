@@ -1,0 +1,7 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1769497543" />
+    <testcase name="test_spi_master_full_sequence" classname="test" file="/home/nashvader/AI-HDL/DP_1/test.py" lineno="9" time="0.01620030403137207" sim_time_ns="31100.0" ratio_time="1919717.0583820217" />
+    <testcase name="test_spi_timing" classname="test" file="/home/nashvader/AI-HDL/DP_1/test.py" lineno="54" time="0.00456547737121582" sim_time_ns="8499.999999999996" ratio_time="1861798.736226434" />
+  </testsuite>
+</testsuites>
