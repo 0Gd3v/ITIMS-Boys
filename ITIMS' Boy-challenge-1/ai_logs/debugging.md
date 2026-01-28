@@ -14,6 +14,7 @@
 Based on the files provided, here is the corrected and refined testbench script.
 Corrected SPI Master Test Suite
 I have updated the setup_test function to use units="ns" (plural) and adjusted the logic to be more robust for the tqvp_spi_master module.
+
 test/test.py
 ```python
 import cocotb
@@ -128,6 +129,7 @@ Bit Masking: Correctly mapped the uo_out pins where uo_out[0] is CLK, uo_out[1] 
 
 **Response**: It looks like we hit a couple of snags! The terminal outputs show a TypeError because cocotb v1.9.2 expects the keyword units (plural), and a SyntaxError because the citation markers from my previous response were accidentally included in the Python code.
 Here is the corrected, "clean" testbench. I have also added a fifth test case to check the clock divider's effect on the physical timing of the SPI clock.
+
 test/test.py
 ```python
 import cocotb
