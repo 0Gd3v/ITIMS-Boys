@@ -1,7 +1,7 @@
 # Lessons Learned
 
 ## 1. Technical Insights: Physical Design & Timing
-- **Utilization vs. Routability**: We learned that a lower utilization (**11.67%**) is not wasteful but essential for complex systems like ours (4,035 cells). "Packing" logic too tightly often leads to unresolvable routing congestion and timing violations.
+- **Utilization vs. Routability**: We learned that a lower utilization (**11.7249%**) is not wasteful but essential for complex systems like ours (4,013 cells). "Packing" logic too tightly often leads to unresolvable routing congestion and timing violations.
 - **Post-Layout Reality Check**: Functional verification (RTL simulation) is not enough. Our experience with the **Standard Delay Format (.sdf)** proved that physical wire delays can significantly impact high-speed protocols. Validating with `.sdf` ensures the design works on actual silicon, not just in theory.
 
 ## 2. AI Collaboration Strategy

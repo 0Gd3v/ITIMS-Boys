@@ -12,9 +12,9 @@ The design was synthesized and routed using the **OpenLane automated flow** on t
 
 | Metric | Value | Source |
 |:---|:---|:---|
-| **Total Cell Count** | **4,035 Cells** | OpenLane Summary (Full System) |
+| **Total Cell Count** | **4,013 Cells** | OpenLane Summary (Full System) |
 | **Core Area** | **37,488.4544 µm²** | Floorplan Report |
-| **Core Utilization** | **11.6748%** | Placement Summary |
+| **Core Utilization** | **11.7249%** | Placement Summary |
 | **Clock Period** | **20.0 ns (50 MHz)** | Timing Constraints |
 | **Worst Negative Slack** | **0.000 ns** | STA Sign-off |
 
