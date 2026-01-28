@@ -340,4 +340,4 @@ Clock Divider Flexibility: Since the RTL allows a programmable clk_divider, Case
 Data Integrity: By checking the most significant bit (MSB) first, we confirm the shift register logic matches standard SPI protocols.
 Would you like me to generate a timing diagram description for the test_varying_clock_speeds case to help visualize the signal behavior?
 
---->process debug testbench, we pulled up in debugging.md
+--> Note : we pulled up the process of debug testbench in debugging.md
