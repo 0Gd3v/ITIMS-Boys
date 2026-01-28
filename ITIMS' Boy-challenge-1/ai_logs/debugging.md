@@ -2,7 +2,7 @@
 
 ## Conversation 1: Debugging
 
-**Timestamp**: 2026-27-01 15:45:00
+**Timestamp**: 2026-01-27 15:45:00
 
 **Tool**: Gemini pro
 
@@ -124,7 +124,7 @@ Bit Masking: Correctly mapped the uo_out pins where uo_out[0] is CLK, uo_out[1] 
 
 ## Conversation 2: fix bug and create 1 test case more (4-->5)
 
-**Timestamp**: 2026-27-01 15:45:00
+**Timestamp**: 2026-01-27 15:45:00
 
 **Tool**: Gemini pro
 
