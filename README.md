@@ -9,16 +9,19 @@
 # ITIMS-Boys - AI-HDL Challenge Submission
 
 ## Team Members
+
 | Name | Primary Role | Specific Responsibilities |
 |:---|:---|:---|
-| **Pham Viet Trung Kien** | Results Lead | Executing OpenLane flow, GDSII generation, and Metrics extraction. |
-| **Nguyen Ngoc Hai** | Documentation Lead | Technical writing and managing all reports in the `docs/` directory. |
-| **Cao Hoang Long** | RTL Designer | Main SRC Module design and hardware architecture development. |
 | **Do Tien Dung** | Verification Engineer | Testbench construction and logic verification (L vs D). |
+| **Nguyen Ngoc Hai** | Documentation Lead | Technical writing and managing all reports in the `docs/` directory. |
+| **Pham Viet Trung Kien** | Results Lead | Executing OpenLane flow, GDSII generation, and Metrics extraction. |
+| **Cao Hoang Long** | RTL Designer | Main SRC Module design and hardware architecture development. |
 | **Ta Ngoc Minh Quang** | AI & Media Specialist | AI Interaction logging (BTC Format) and Media/Visualization (Block Diagrams). |
 
 ## Project Summary
-Implementing a high-performance peripheral using the OpenLane automated design flow. Our design focuses on area optimization and meeting strict timing constraints on the sky130_fd_sc_hd technology library.
+This project implements a **Half-Duplex (Transmit-Only) SPI Master Controller** (Peripheral Index: 16), specifically optimized for high-speed data transmission from the TinyQV CPU to write-only external devices. 
+
+Designed for the **SkyWater 130nm (sky130_fd_sc_hd)** technology node using the OpenLane flow, this peripheral manages 8-bit transactions with an **Automatic Chip Select (CS_n)** mechanism. Key architectural features include a **7-bit programmable clock divider** for flexible SPI frequencies and a hardware-level **BUSY flag** for precise CPU synchronization. The design is ideal for driving DACs, LED drivers, and write-only displays where area efficiency and protocol timing are critical.
 
 ## Key Metrics
 - **Flow Status**: Completed Successfully
