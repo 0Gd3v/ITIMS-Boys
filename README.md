@@ -58,12 +58,11 @@ Implementation of a high-performance SPI peripheral using the OpenLane digital d
 
 ## Key Results (Extracted from OpenLane Metrics)
 - **Status**: Flow Completed Successfully
-- **Total Cell Count**: 753 cells
+- **Total Cell Count**: 4013 cells
 - **Sequential Elements**: 112 DFFs
-- **Core Area**: 16,493.32 µm²
+- **Core Area**: 37,488.4544 µm²
 - **Clock Frequency**: 50.0 MHz (Period: 20.0 ns)
-- **Power Density**: 20% Core Utilization
-
+- **Core Utilization**: 44.4% (Optimized for routing efficiency)
 ## Technical Highlights
 - Utilized **OpenLane** automated flow with the **AREA 0** strategy for minimal silicon footprint.
 - Managed routing challenges to achieve a completed flow within 1 minute and 15 seconds.
