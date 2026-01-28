@@ -13,6 +13,7 @@
 **Response**: It looks like you're running a version of cocotb (likely 2.0+) where the unit argument has been removed from the Clock constructor. In newer versions, the time value is passed as a timerator or simply as a number of simulator steps, while the units (plural) keyword or dedicated helper functions are preferred.
 Based on the files provided, here is the corrected and refined testbench script.
 Corrected SPI Master Test Suite
+
 I have updated the setup_test function to use units="ns" (plural) and adjusted the logic to be more robust for the tqvp_spi_master module.
 
 test/test.py
@@ -113,7 +114,9 @@ async def test_all_bit_patterns(dut):
             await ClockCycles(dut.clk, 10)
 ```
 Summary of Fixes:
+
 Keyword Argument: Changed unit="ns" to units="ns" in the Clock call to match the updated cocotb API.
+
 Register Mapping: Ensured all tqv.write_reg and tqv.read_reg calls match the addresses defined in your Verilog: Addr 0 for Data, Addr 1 for Status, and Addr 2 for Divider.
 Bit Masking: Correctly mapped the uo_out pins where uo_out[0] is CLK, uo_out[1] is MOSI, and uo_out[2] is CS.
 
@@ -128,6 +131,7 @@ Bit Masking: Correctly mapped the uo_out pins where uo_out[0] is CLK, uo_out[1] 
 **Prompt**: However, when I ran the test case that you modified for me, it seems to be encountering some issues. after that, can you write for me another test to easure clock cycles between SPI clock toggles to verify divider.
 
 **Response**: It looks like we hit a couple of snags! The terminal outputs show a TypeError because cocotb v1.9.2 expects the keyword units (plural), and a SyntaxError because the citation markers from my previous response were accidentally included in the Python code.
+
 Here is the corrected, "clean" testbench. I have also added a fifth test case to check the clock divider's effect on the physical timing of the SPI clock.
 
 test/test.py
@@ -242,10 +246,15 @@ async def test_divider_timing_precision(dut):
 ```
 Key Fixes Explained
 Keyword units: Your terminal showed TypeError: ... got an unexpected keyword argument 'unit'. Cocotb 1.9.2 requires the plural units="ns".
+
 Syntax Error: The SyntaxError in your screenshot was caused by being inside the Python file. I have moved all citations to the commentary or kept them as Python comments # so they don't break the code.
 
 Register Logic:
+
 Addr 0: Writing here sets busy <= 1 and loads shift_reg.
+
 Addr 1: Reading here returns the busy bit at position 0.
+
 Addr 2: Writing here updates clk_divider.
+
 Would you like me to help you set up a Makefile to automate these tests?
