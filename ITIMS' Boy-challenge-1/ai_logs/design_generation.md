@@ -224,7 +224,7 @@ Key Verification Points
 
 **Purpose**: Generate python test logic for more test cases
 
-**Prompt**: Please read and study the contents of the three files above. Acting as a verification expert, I need you to write a new testbench that can cover more test cases (around 4–5 cases) for spi.py (attached files : itim'spi.v, tt_wrapper.v)
+**Prompt**: Please read and study the contents of the three files above. Acting as a verification expert, I need you to write a new testbench that can cover more test cases (around 4–5 cases) for spi.py (attached files : spi_.v, tt_wrapper.v)
 
 **Response**: Based on the provided Verilog implementation of the SPI master and the existing cocotb test infrastructure, I have developed an expanded test suite. As a verification expert, I’ve focused on "edge cases" such as varying clock speeds, back-to-back transmissions, and reset robustness to ensure the tqvp_spi_master is production-ready.
 
