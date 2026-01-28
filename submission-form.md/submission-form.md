@@ -1,18 +1,19 @@
+# ITIMS-Boys
 # AI-HDL Challenge Submission Form
 
 ## Basic Information
 - **Submission Date**: 2026-01-27
 - **Challenge Number**: [1]
 - **Team Name**: ITIMS-Boys
-- **Team ID**: []
 
-## Team Members
+## Official Team Roster & Contribution
+
 | Name | Role | Email | Contribution % |
-|------|------|-------|----------------|
-| Pham Viet Trung Kien | Results Lead | kien.pvt2419567@sis.hust.edu.vn | 20% |
-| Nguyen Ngoc Hai | Documentation Lead | hainn2419514@sis.hust.edu.vn | 20% |
-| Cao Hoang Long | RTL Designer | long.ch2419579@sis.hust.edu.vn | 20% |
+|:---|:---|:---|:---|
 | Do Tien Dung | Verification Engineer | Dung.DT2419499@sis.hust.edu.vn | 20% |
+| Nguyen Ngoc Hai | Documentation Lead | hainn2419514@sis.hust.edu.vn | 20% |
+| Pham Viet Trung Kien | Results Lead | kien.pvt2419567@sis.hust.edu.vn | 20% |
+| Cao Hoang Long | RTL Designer | long.ch2419579@sis.hust.edu.vn | 20% |
 | Ta Ngoc Minh Quang | AI & Media Specialist | quang.tnm2419611@sis.hust.edu.vn | 20% |
 
 ## Design Specifications Met
@@ -23,7 +24,7 @@
 - [x] All test cases pass
 
 ## AI Tool Usage Declaration
-- **Primary AI Tool**: [ChatGPT-4, Claude 3.5 Sonnet]
+- **Primary AI Tool**: [ChatGPT-4,Gemini, Claude 3.5 Sonnet]
 - **Total Conversation Sessions**: [15 sessions]
 - **Estimated AI-Generated Code %**: [ 40%]
 - **Manual Modifications Made**: Yes
@@ -45,4 +46,4 @@
 We certify that this submission represents our original work, completed according to AI-HDL rules and academic integrity guidelines. All AI interactions have been logged and submitted.
 
 **Team Representative**: Cao Hoang Long
-**Date**: 2026-01-27
+**Date**: 2026-01-28
