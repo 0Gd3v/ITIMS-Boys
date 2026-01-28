@@ -9,18 +9,6 @@
 # ITIMS-Boys - AI-HDL Challenge Submission
 
 ## Team Members
-<<<<<<< HEAD
-| Name | Primary Role | Specific Responsibilities |
-|:---|:---|:---|
-| **Pham Viet Trung Kien** | Results Lead | Executing OpenLane flow, GDSII generation, and Metrics extraction. |
-| **Nguyen Ngoc Hai** | Documentation Lead | Technical writing and managing all reports in the `docs/` directory. |
-| **Cao Hoang Long** | RTL Designer | Main SRC Module design and hardware architecture development. |
-| **Do Tien Dung** | Verification Engineer | Testbench construction and logic verification (L vs D). |
-| **Ta Ngoc Minh Quang** | AI & Media Specialist | AI Interaction logging (BTC Format) and Media/Visualization (Block Diagrams). |
-
-## Project Summary
-Implementing a high-performance peripheral using the OpenLane automated design flow. Our design focuses on area optimization and meeting strict timing constraints on the sky130_fd_sc_hd technology library.
-=======
 
 | Name | Primary Role | Specific Responsibilities |
 |:---|:---|:---|
@@ -111,7 +99,6 @@ The design is verified using the **cocotb** framework with the following test ca
 - **Clock Speed Verification**: Ensuring BUSY bit timing scales with divider values.
 - **Protocol Timing**: Confirming MSB-first data transmission on MOSI.
 - **Reset Safety**: Verifying asynchronous reset immediately clears BUSY and pulls CS_n high..
->>>>>>> 4cbcd39efe98fea4fe971bc83b7e75a45691866a
 
 ## Key Metrics
 - **Flow Status**: Completed Successfully
