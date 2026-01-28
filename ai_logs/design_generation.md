@@ -128,7 +128,7 @@ while (status & 0x01):
 
 The following test script uses cocotb and the tqv helper class to write a byte to the data register, poll the status register until the "busy" bit clears, and verify the physical signal transitions on the pins.
 
-test/spi.py
+test/test.py
 
 ```Python
 import cocotb
@@ -231,7 +231,7 @@ Key Verification Points
 Expanded SPI Master Test Suite
 This script adds four distinct test cases to your verification environment to push the peripheral beyond basic functionality.
 
-test/spi.py
+test/test.py
 
 ```Python
 import cocotb
