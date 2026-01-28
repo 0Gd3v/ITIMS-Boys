@@ -245,6 +245,7 @@ async def test_divider_timing_precision(dut):
     assert count >= divider_val, f"Clock toggled too fast! Got {count} cycles"
 ```
 Key Fixes Explained
+
 Keyword units: Your terminal showed TypeError: ... got an unexpected keyword argument 'unit'. Cocotb 1.9.2 requires the plural units="ns".
 
 Syntax Error: The SyntaxError in your screenshot was caused by being inside the Python file. I have moved all citations to the commentary or kept them as Python comments # so they don't break the code.
