@@ -209,11 +209,6 @@ async def test_spi_timing(dut):
     mosi = (pins >> 1) & 0x01
     assert mosi == 1, "MOSI should be 1 for the MSB of 0x80"
     dut._log.info("Timing for first bit verified.")
-Key Verification Points
-•	Clock Divider: You can vary the value written to addr 2 to see the SPI clock frequency change in your VCD waveform.
-•	Status Polling: This mimics how a real Risc-V program would wait for the hardware to finish before sending the next byte.
-•	Pin Mapping: The test assumes the mapping uo_out[0] = CLK, uo_out[1] = MOSI, and uo_out[2] = CS.
-
 ```
 Key Verification Points
 •	Clock Divider: You can vary the value written to addr 2 to see the SPI clock frequency change in your VCD waveform.
