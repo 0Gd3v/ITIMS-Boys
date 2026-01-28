@@ -1,0 +1,33 @@
+Warning: Replacing memory \registers with list of registers. See /openlane/designs/DP_1/register.v:44
+Warning: Replacing memory \data_sync with list of registers. See /openlane/designs/DP_1/synchronizer.sv:14
+Warning: Replacing memory \data_sync with list of registers. See /openlane/designs/DP_1/synchronizer.sv:14
+Warning: Replacing memory \data_sync with list of registers. See /openlane/designs/DP_1/synchronizer.sv:14
+Warning: Replacing memory \data_sync with list of registers. See /openlane/designs/DP_1/synchronizer.sv:14
+Warning: Replacing memory \data_sync with list of registers. See /openlane/designs/DP_1/synchronizer.sv:14
+Warning: Replacing memory \data_sync with list of registers. See /openlane/designs/DP_1/synchronizer.sv:14
+ABC: Warning: Detected 2 multi-output gates (for example, "sky130_fd_sc_hd__fa_1").
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [7] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [6] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [5] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [4] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [3] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [2] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [1] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uo_out [0] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [7] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [6] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [5] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [4] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [3] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [2] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [1] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_out [0] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [7] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [6] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [5] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [4] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [3] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [2] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [1] is used but has no driver.
+Warning: Wire tt_um_tqv_peripheral_harness.\uio_oe [0] is used but has no driver.
+Warnings: 26 unique messages, 31 total
