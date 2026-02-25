@@ -341,3 +341,29 @@ Data Integrity: By checking the most significant bit (MSB) first, we confirm the
 Would you like me to generate a timing diagram description for the test_varying_clock_speeds case to help visualize the signal behavior?
 
 --> Note : we pulled up the process of debug testbench in debugging.md
+## Conversation 4: Improve SPI for more functionalities
+**Timestamp**: 2026-02-25 08:58:00
+
+**Tool**: Claude AI
+
+**Purpose**: Improve SPI for more functionalities
+
+**Prompt**: i find that this SPI peripheral is still very simple, how can i improve this SPI for more functionalities while have the best area and utilization PPA.
+
+**Response**: Great question. Let me design a feature-rich but area-optimal SPI peripheral, thinking carefully about what features give the most capability per gate.
+
+Here's a full breakdown of every new feature and the PPA reasoning behind each decision:
+
+| Feature | How it works | Gate cost |
+| :--- | :--- | :--- |
+| **SPI Modes 0-3 (CPOL+CPHA)** | CPOL is XOR'd at the output wire — zero SM cost. CPHA sets the initial clock value and flips the sample/shift edge test | 1 XOR gate + 1 XNOR compare reuse |
+| **Full-duplex MISO RX** | `rx_shift` captures MISO on every sample edge; `rx_hold` latches the complete result at end-of-frame | +8 FFs (rx_shift) + 8 FFs (rx_hold) |
+| **Configurable word length 1-8b** | `cfg_wlen` (3 bits) is loaded into `bit_cnt` once at start; no per-cycle mux | +3 FFs |
+| **LSB-first** | Reversal done only at load time (TX) and latch time (RX) — not in the shift loop | 0 per-cycle cost |
+| **Manual CS (multi-byte bursts)** | 1 `cs_force` FF; `cs_n` output ORs `busy` and `cs_force` based on `cfg_mcs` | +1 FF, 1 mux |
+| **Transfer-complete IRQ** | Shares the `bit_cnt == 1` terminal check — no extra comparator; write-1-clear from CPU | +1 FF |
+
+Key PPA principles applied throughout
+The biggest lever is distinguishing what needs to be stored from what can be derived. `busy`, `cs_n`, and `sclk_out` are all combinatorial wires in this design — that's 3 fewer flip-flops with no logic penalty. The CPOL XOR at the output is especially clean: inverting the clock polarity costs literally one gate and keeps the state machine logic identical for all four SPI modes.
+The CPHA handling is the trickiest part to get right cheaply. Rather than adding a separate phase-tracking state, the design exploits the fact that `cfg_cpha` can serve double duty: it sets the initial `spi_clk_r` value before the first edge and it defines which half-period level triggers sampling vs. shifting. This means modes 0–3 all run through the same code path with zero conditional branches.
+The `wire-OR` pattern on `data_out` (`({8{addr==X}} & value) | ...`) tends to synthesise to a tree of AND-OR gates rather than a chain of 2:1 muxes, giving the synthesiser more freedom to balance the timing path.
