@@ -12,7 +12,6 @@
 **Prompt**: As a circuit design expert, you should thoroughly optimize and enhance this SPI code to improve the PPA as much as possible while ensuring the original module's functionality remains intact.
 
 **Response**: This is a very well-structured SPI master. You’ve already made excellent PPA (Power, Performance, Area) choices, such as using static wire-routing for LSB/MSB reversal and wire-ORing the read bus to avoid deep multiplexer chains.
-+2
 
 When running this through an OpenLane flow using Yosys for your TinyQV peripheral design, standard cell synthesis tools can be further guided to produce a smaller footprint and lower power consumption.
 
