@@ -364,6 +364,9 @@ Here's a full breakdown of every new feature and the PPA reasoning behind each d
 | **Transfer-complete IRQ** | Shares the `bit_cnt == 1` terminal check — no extra comparator; write-1-clear from CPU | +1 FF |
 
 Key PPA principles applied throughout
+
 The biggest lever is distinguishing what needs to be stored from what can be derived. `busy`, `cs_n`, and `sclk_out` are all combinatorial wires in this design — that's 3 fewer flip-flops with no logic penalty. The CPOL XOR at the output is especially clean: inverting the clock polarity costs literally one gate and keeps the state machine logic identical for all four SPI modes.
+
 The CPHA handling is the trickiest part to get right cheaply. Rather than adding a separate phase-tracking state, the design exploits the fact that `cfg_cpha` can serve double duty: it sets the initial `spi_clk_r` value before the first edge and it defines which half-period level triggers sampling vs. shifting. This means modes 0–3 all run through the same code path with zero conditional branches.
+
 The `wire-OR` pattern on `data_out` (`({8{addr==X}} & value) | ...`) tends to synthesise to a tree of AND-OR gates rather than a chain of 2:1 muxes, giving the synthesiser more freedom to balance the timing path.
