@@ -1,9 +1,9 @@
-# ITIMS-Boys - Challenge [1] Submission
+# ITIMS-Boys - Challenge [2] Submission
 
 ## Team Information
 - **Team Name**: ITIMS-Boys
 - **Institution**: ITIMS - Hanoi University of Science and Technology
-- **Division**: 
+- **Division**: Lower division
 ## Team Members
 
 # ITIMS-Boys - AI-HDL Challenge Submission
