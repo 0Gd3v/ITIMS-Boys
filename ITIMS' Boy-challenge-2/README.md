@@ -52,14 +52,14 @@ The design underwent rigorous verification using the **cocotb** Python framework
 * **Reset & Stability**: Verifying asynchronous reset recovery and ensuring configuration registers are locked while the `BUSY` flag is active.
 
 ## Implementation Metrics & Results
-*Implementation of this high-performance peripheral was executed using the OpenLane ASIC digital design flow, targeting the sky130_fd_sc_hd standard cell library under the mentorship of Nguyen Tri Dung.*
+*Implementation of this high-performance peripheral was executed using the OpenLane ASIC digital design flow, targeting the sky130_fd_sc_hd standard cell library under the mentorship of sudipta-paria.*
 
 * **Status**: Flow Completed Successfully (within 1m 15s)
-* **Total Cell Count**: 4,013 cells
+* **Total Cell Count**: 3,650 Cells
 * **Sequential Elements**: 112 DFFs
-* **Core Area**: 37,488.4544 µm²
-* **Core Utilization**: 11.72% 
-* **Target Frequency**: 50.0 MHz (Period: 20.0 ns)
+* **Core Area**: 33,344.48 µm²
+* **Core Utilization**: 12.2251%
+* **Target Frequency**: 14.0 ns (~71.4 MHz)
 * **Worst Negative Slack (WNS)**: 0.000 ns
 
 ### Technical Highlights
