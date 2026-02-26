@@ -8,9 +8,9 @@
 - **Challenge**: Potential glitches in `SCLK` generation if the `DIVIDER` register (Address 2) was updated mid-transmission.
 - **Solution**: We implemented a logic gate to prevent register updates while the `BUSY` flag is High, ensuring frequency stability.
 
-## 3. Scaling to Full System Integration (4,035 Cells)
-- **Challenge**: Integrating the module into a full system of **4,035 cells** while maintaining a compact physical footprint.
-- **Solution**: We optimized the placement to achieve a core area of **37,488.4544 µm²** with **11.6748% utilization**, providing a clean routing environment.
+## 3. Scaling to Full System Integration (3650 Cells)
+- **Challenge**: Integrating the module into a full system of **3650 cells** while maintaining a compact physical footprint.
+- **Solution**: We optimized the placement to achieve a core area of **33,344.48 µm²** with **12.2251% utilization**, providing a clean routing environment.
 
 ## 4. Verification of 50MHz Timing (WNS = 0)
 - **Challenge**: Functional simulations did not account for physical delays in the 130nm process.

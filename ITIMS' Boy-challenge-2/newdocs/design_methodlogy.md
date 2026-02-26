@@ -12,14 +12,14 @@ The design was synthesized, placed, and routed using the **OpenLane ASIC automat
 
 | Metric | Value | Source |
 |:---|:---|:---|
-| **Total Cell Count** | **4,013 Cells** | OpenLane Synthesis Summary |
-| **Core Area** | **37,488.4544 µm²** | Final Floorplan Report |
-| **Core Utilization** | **11.72%** | Placement Summary |
-| **Clock Period** | **20.0 ns (50 MHz)** | SDC Timing Constraints |
+| **Total Cell Count** | **3650 Cells** | OpenLane Synthesis Summary |
+| **Core Area** | **33,344.48 µm²** | Final Floorplan Report |
+| **Core Utilization** | **12.2251%** | Placement Summary |
+| **Clock Period** | **14.0 ns (~71.4 MHz)** | SDC Timing Constraints |
 | **Worst Negative Slack** | **0.000 ns** | STA Sign-off Report |
 
 ## 3. Key Design Decisions
-- **Routability over Density**: We deliberately maintained a strategic core utilization of **11.72%** to prevent routing congestion and DRC violations within the 4,013-cell system wrapper.
+- **Routability over Density**: We deliberately maintained a strategic core utilization of **12.2251%** to prevent routing congestion and DRC violations within the 3650-cell system wrapper.
 - **PPA Optimization**: Replaced standard variable comparators with zero-check down-counters, and flattened the combinatorial logic cone for the `BUSY` flag to maximize the maximum frequency ($F_{max}$).
 - **Timing Closure Verification**: We performed rigorous post-layout timing verification using the **Standard Delay Format (.sdf)** in `cocotb`. This back-annotation ensured the 50MHz target was met under realistic physical delays with a perfectly optimized **WNS of 0.000 ns**.
 
