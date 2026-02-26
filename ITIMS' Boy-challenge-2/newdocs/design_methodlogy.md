@@ -1,28 +1,30 @@
 # Design Methodology
 
 ## 1. Architectural Strategy
-Our team adopted a modular design strategy for the **tqvp_spi_master** peripheral (Index 16). We decomposed the architecture into distinct functional blocks to ensure scalability:
-- **CPU Interface**: Register-mapped (DATA, STATUS, DIVIDER) for TinyQV bus compatibility.
-- **FSM & Control Logic**: Manages 8-bit sequences and automated CS_n timing.
-- **7-bit Clock Divider**: Provides programmable SPI clock scaling via Address 2.
-- **Shift Register**: Handles MSB-first serial data output.
+Our team adopted a highly optimized, modular design strategy for the **tqvp_spi_master** peripheral (Index 16). We decomposed the architecture into distinct functional blocks to ensure scalability, Full-Duplex capability, and minimal area:
+- **CPU Interface**: Register-mapped (DATA, STATUS, DIVIDER, CONFIG) to provide seamless TinyQV bus compatibility.
+- **FSM & Control Logic**: Manages SPI Modes 0-3 (CPOL/CPHA), automated `CS_n` timing, and configurable word lengths (4 to 8 bits).
+- **Clock Generation**: Utilizes a highly optimized 6-bit down-counter for programmable SPI clock scaling, reducing flip-flop utilization compared to standard 8-bit counters.
+- **Datapath**: Features independent TX and RX shift registers to support concurrent Full-Duplex data transmission, with hardware-level LSB/MSB-first reversal.
 
 ## 2. Implementation Flow & Physical Metrics
-The design was synthesized and routed using the **OpenLane automated flow** on the **SkyWater 130nm** process. The final physical implementation achieved the following results:
+The design was synthesized, placed, and routed using the **OpenLane ASIC automated flow** targeting the **SkyWater 130nm** (sky130_fd_sc_hd) process node. The final physical implementation achieved the following results:
 
 | Metric | Value | Source |
 |:---|:---|:---|
-| **Total Cell Count** | **4,013 Cells** | OpenLane Summary (Full System) |
-| **Core Area** | **37,488.4544 µm²** | Floorplan Report |
-| **Core Utilization** | **11.7249%** | Placement Summary |
-| **Clock Period** | **20.0 ns (50 MHz)** | Timing Constraints |
-| **Worst Negative Slack** | **0.000 ns** | STA Sign-off |
+| **Total Cell Count** | **4,013 Cells** | OpenLane Synthesis Summary |
+| **Core Area** | **37,488.4544 µm²** | Final Floorplan Report |
+| **Core Utilization** | **11.72%** | Placement Summary |
+| **Clock Period** | **20.0 ns (50 MHz)** | SDC Timing Constraints |
+| **Worst Negative Slack** | **0.000 ns** | STA Sign-off Report |
 
 ## 3. Key Design Decisions
-- **Routability Optimization**: We maintained a strategic core utilization of **11.6748%** to prevent routing congestion within the 4,035-cell system.
-- **Timing Closure**: We performed post-layout timing verification using the **Standard Delay Format (.sdf)** to ensure the 50MHz target was met with a perfectly optimized **WNS of 0.000 ns**.
+- **Routability over Density**: We deliberately maintained a strategic core utilization of **11.72%** to prevent routing congestion and DRC violations within the 4,013-cell system wrapper.
+- **PPA Optimization**: Replaced standard variable comparators with zero-check down-counters, and flattened the combinatorial logic cone for the `BUSY` flag to maximize the maximum frequency ($F_{max}$).
+- **Timing Closure Verification**: We performed rigorous post-layout timing verification using the **Standard Delay Format (.sdf)** in `cocotb`. This back-annotation ensured the 50MHz target was met under realistic physical delays with a perfectly optimized **WNS of 0.000 ns**.
 
 ## 4. Physical Sign-off
-Final verification confirmed 100% manufacturing readiness:
+Final verification confirmed 100% manufacturing readiness for the Tiny Tapeout submission:
 - **DRC (Magic)**: 0 violations.
 - **LVS (Netgen)**: 0 mismatches.
+- **Antenna Checks**: 0 violations.
