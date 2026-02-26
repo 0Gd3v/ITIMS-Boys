@@ -1,11 +1,13 @@
 ### Design Comparison: Phase 1 vs. Phase 2
 
-| Metric | Phase 1 | Phase 2 | Diff (%) | Optimization Method | Trade-off |
+| Metric | Phase 1 (Baseline) | Phase 2 (Optimized) | Diff (%) | Optimization Method | Trade-off |
 |:---|:---:|:---:|:---:|:---|:---|
-| **Performance** | 1.20 ns | 1.05 ns | -12.5% | Retiming / Pipeline insertion | Increased Latency |
-| **Power** | 2.55 mW | 2.27 mW | -11.0% | Clock Gating / Multi-Vt cells | Slower non-critical paths |
-| **Area** | 4500 um^2 | 4725 um^2 | +5.0% | Upsizing cells for timing | Higher Leakage Power |
-| **Utilization** | 75.2% | 78.5% | +3.3% | Congestion-driven placement | Routing complexity |
+| **Clock Period** | 20.0 ns | 14.0 ns | -30.0% | Tightening timing constraints | Increased design pressure |
+| **Frequency** | 50.0 MHz | 71.4 MHz | +42.8% | Frequency scaling | More sensitive to PVT variations |
+| **Core Area** | 37,488.45 um^2 | 33,344.48 um^2 | -11.0% | Logic synthesis optimization | Potential routing density increase |
+| **Cell Count** | 4,013 Cells | 3,650 Cells | -9.0% | Gate-level restructuring | Reduced logic redundancy |
+| **Utilization** | 11.72% | 12.22% | +4.3% | Floorplan area reduction | Reduced whitespace for ECO |
+| **Worst Neg Slack**| 0.000 ns | 0.000 ns | 0% | Timing met (Sign-off) | N/A |
 
 Key Architectural Changes for PPA Replaced Variable Comparators with Zero-Checks:
 
