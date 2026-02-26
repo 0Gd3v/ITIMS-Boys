@@ -4,7 +4,7 @@
 
 ## Basic Information
 
-* **Submission Date**: 2026-01-27
+* **Submission Date**: 2026-02-26
 * **Challenge Number**: 
 * **Team Name**: ITIMS-Boys
 
@@ -54,7 +54,7 @@
 We certify that this submission represents our original work, completed according to AI-HDL rules and academic integrity guidelines. All AI interactions have been logged and submitted.
 
 **Team Representative**: Cao Hoang Long
-**Date**: 2026-01-28
+**Date**: 2026-02-26
 
 
 
