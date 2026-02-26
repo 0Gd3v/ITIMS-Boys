@@ -261,7 +261,7 @@ Addr 2: Writing here updates clk_divider.
 Would you like me to help you set up a Makefile to automate these tests?
 
 
-## Conversation 2: Edit test.py file for MISO functionality
+## Conversation 3: Edit test.py file for MISO functionality
 
 **Timestamp**: 2026-02-25 09:07:00
 
@@ -715,7 +715,7 @@ For LSB-first, it reverses the bit order it drives on the wire — so the periph
 | **9 — IRQ lifecycle** | IRQ=0 → IRQ=1 after transfer → write-1-clear → re-arms | Status register bit behaviour verified at each step |
 | **10 — Full duplex** | Simultaneous TX and RX independence | MOSI line observed bit-by-bit AND `rx_hold` both checked in same transfer |
 
-## Conversation 3: Edit test.py file for all test cases
+## Conversation 4: Edit test.py file for all test cases
 
 **Timestamp**: 2026-02-25 11:45:00
 
