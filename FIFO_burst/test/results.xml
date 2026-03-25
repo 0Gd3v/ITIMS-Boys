@@ -1,0 +1,8 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1774194537" />
+    <testcase name="test_fifo_status_flags" classname="test" file="/home/kingkienpls/AI-HDL/DP_3/test/test.py" lineno="38" time="0.015588045120239258" sim_time_ns="350.0" ratio_time="22453.10411281565" />
+    <testcase name="test_burst_spi_transmission" classname="test" file="/home/kingkienpls/AI-HDL/DP_3/test/test.py" lineno="57" time="0.02226877212524414" sim_time_ns="994.0" ratio_time="44636.497890837454" />
+    <testcase name="test_irq_generation" classname="test" file="/home/kingkienpls/AI-HDL/DP_3/test/test.py" lineno="78" time="0.01714324951171875" sim_time_ns="616.0" ratio_time="35932.51090342679" />
+  </testsuite>
+</testsuites>
