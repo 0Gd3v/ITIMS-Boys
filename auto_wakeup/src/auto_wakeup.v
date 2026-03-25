@@ -72,10 +72,7 @@ module auto_wakeup (
                     default: ;
                 endcase
             end
-
-            // ------------------------------------------------------------------
-            // FIX Bug 3: Nếu auto_en bị tắt giữa chừng, dừng FSM ngay lập tức
-            // ------------------------------------------------------------------
+            
             if (!auto_en && auto_state != A_IDLE) begin
                 auto_state    <= A_IDLE;
                 auto_cs_force <= 1'b0;
