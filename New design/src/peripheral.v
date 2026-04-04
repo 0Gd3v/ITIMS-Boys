@@ -28,23 +28,21 @@ module tqvp_spi_master (
     reg [4:0]  bit_cnt;       
     reg        busy, spi_clk_r, cs_force, irq, auto_irq;
 
+    // --- NEW: Security Hardware Lock Registers ---
+    reg [31:0] secure_lock;
+    reg        access_violation;
+    wire       is_unlocked = (secure_lock == 32'hCAFEBABE) && !access_violation;
+
     wire miso     = ui_in[0];
     wire cs_n     = ~( (cfg_mcs ? cs_force : busy) );
     wire sclk_out = spi_clk_r ^ cfg_cpol;
     wire write_en = (data_write_n != 2'b11);
     wire crc_fb   = crc_reg[15] ^ miso; 
 
-    // =========================================================================
-    // Explicit Byte Alignment & Reversal (The Foolproof Fix)
-    // =========================================================================
-    
     // CPU Data Bytes
-    wire [7:0] d0 = data_in[7:0];
-    wire [7:0] d1 = data_in[15:8];
-    wire [7:0] d2 = data_in[23:16];
-    wire [7:0] d3 = data_in[31:24];
+    wire [7:0] d0 = data_in[7:0]; wire [7:0] d1 = data_in[15:8];
+    wire [7:0] d2 = data_in[23:16]; wire [7:0] d3 = data_in[31:24];
 
-    // Reversed CPU Bytes
     wire [7:0] d0_r = {d0[0], d0[1], d0[2], d0[3], d0[4], d0[5], d0[6], d0[7]};
     wire [7:0] d1_r = {d1[0], d1[1], d1[2], d1[3], d1[4], d1[5], d1[6], d1[7]};
     wire [7:0] d2_r = {d2[0], d2[1], d2[2], d2[3], d2[4], d2[5], d2[6], d2[7]};
@@ -60,11 +58,8 @@ module tqvp_spi_master (
         endcase
     end
 
-    // Auto Cmd Bytes
-    wire [7:0] a0 = auto_cmd[7:0];
-    wire [7:0] a1 = auto_cmd[15:8];
-    wire [7:0] a2 = auto_cmd[23:16];
-    wire [7:0] a3 = auto_cmd[31:24];
+    wire [7:0] a0 = auto_cmd[7:0]; wire [7:0] a1 = auto_cmd[15:8];
+    wire [7:0] a2 = auto_cmd[23:16]; wire [7:0] a3 = auto_cmd[31:24];
 
     wire [7:0] a0_r = {a0[0], a0[1], a0[2], a0[3], a0[4], a0[5], a0[6], a0[7]};
     wire [7:0] a1_r = {a1[0], a1[1], a1[2], a1[3], a1[4], a1[5], a1[6], a1[7]};
@@ -81,19 +76,11 @@ module tqvp_spi_master (
         endcase
     end
 
-    // RX Reversal Bytes
-    wire [7:0] r0_r = {rx_shift[0], rx_shift[1], rx_shift[2], rx_shift[3],
-                       rx_shift[4], rx_shift[5], rx_shift[6], rx_shift[7]};
-    wire [7:0] r1_r = {rx_shift[8], rx_shift[9], rx_shift[10], rx_shift[11],
-                       rx_shift[12], rx_shift[13], rx_shift[14], rx_shift[15]};
-    wire [7:0] r2_r = {rx_shift[16], rx_shift[17], rx_shift[18], rx_shift[19],
-                       rx_shift[20], rx_shift[21], rx_shift[22], rx_shift[23]};
-    wire [7:0] r3_r = {rx_shift[24], rx_shift[25], rx_shift[26], rx_shift[27],
-                       rx_shift[28], rx_shift[29], rx_shift[30], rx_shift[31]};
+    wire [7:0] r0_r = {rx_shift[0], rx_shift[1], rx_shift[2], rx_shift[3], rx_shift[4], rx_shift[5], rx_shift[6], rx_shift[7]};
+    wire [7:0] r1_r = {rx_shift[8], rx_shift[9], rx_shift[10], rx_shift[11], rx_shift[12], rx_shift[13], rx_shift[14], rx_shift[15]};
+    wire [7:0] r2_r = {rx_shift[16], rx_shift[17], rx_shift[18], rx_shift[19], rx_shift[20], rx_shift[21], rx_shift[22], rx_shift[23]};
+    wire [7:0] r3_r = {rx_shift[24], rx_shift[25], rx_shift[26], rx_shift[27], rx_shift[28], rx_shift[29], rx_shift[30], rx_shift[31]};
 
-    // =========================================================================
-    // State Machine
-    // =========================================================================
     always @(posedge clk) begin
         if (!rst_n) begin
             cfg_cpol <= 1'b0; cfg_cpha <= 1'b0; cfg_lsb <= 1'b0; cfg_mcs <= 1'b0;
@@ -102,6 +89,9 @@ module tqvp_spi_master (
             busy <= 1'b0; spi_clk_r <= 1'b0; cs_force <= 1'b0; irq <= 1'b0;
             auto_irq <= 1'b0; auto_en <= 1'b0; sleep_timer <= 16'h0; timer_period <= 16'h0;
             thresh_high <= 8'hFF; thresh_low <= 8'h00; auto_cmd <= 32'h0;
+            
+            secure_lock <= 32'h0;
+            access_violation <= 1'b0;
         end else begin
 
             if (write_en && !busy) begin
@@ -110,13 +100,28 @@ module tqvp_spi_master (
                     6'h2: clk_div <= data_in[5:0];
                     6'h3: {cfg_wlen, cfg_mcs, cfg_lsb, cfg_cpha, cfg_cpol} <= {data_in[8:4], data_in[3:0]};
                     6'h4: cs_force <= data_in[0];
-                    6'h5: timer_period <= data_in[15:0];
-                    6'h6: auto_cmd     <= data_in[31:0];
-                    6'h7: {thresh_high, thresh_low} <= {data_in[15:8], data_in[7:0]};
+                    
+                    // SECURE ZONE: Hardware Gated Registers
+                    6'h5: if (is_unlocked) timer_period <= data_in[15:0];
+                    6'h6: if (is_unlocked) auto_cmd     <= data_in[31:0];
+                    6'h7: if (is_unlocked) {thresh_high, thresh_low} <= {data_in[15:8], data_in[7:0]};
                     6'h8: begin 
-                            if (data_in[0] && !auto_en) sleep_timer <= timer_period; 
-                            auto_en <= data_in[0];
+                            if (is_unlocked) begin
+                                if (data_in[0] && !auto_en) sleep_timer <= timer_period; 
+                                auto_en <= data_in[0];
+                            end
+                            // Clearing IRQ is always allowed, even if locked
                             if (data_in[1]) auto_irq <= 1'b0; 
+                          end
+                          
+                    // THE LOCK MECHANISM
+                    6'h9: begin
+                            if (data_in == 32'hCAFEBABE) begin
+                                if (!access_violation) secure_lock <= data_in;
+                            end else begin
+                                secure_lock <= 32'h0;
+                                access_violation <= 1'b1; // Trigger permanent lockout
+                            end
                           end
                     default: ;
                 endcase
@@ -189,11 +194,13 @@ module tqvp_spi_master (
         end
     end
 
+    // Status [3] now exposes the Tamper Evident Access Violation flag
     assign data_out =
         (address == 6'h0) ? rx_hold :
-        (address == 6'h1) ? {24'h0, 5'b0, auto_irq, irq, busy} :
+        (address == 6'h1) ? {24'h0, 4'b0, access_violation, auto_irq, irq, busy} :
         (address == 6'h2) ? {24'h0, 2'b0, clk_div} :
         (address == 6'h8) ? {16'h0, crc_reg} : 
+        (address == 6'h9) ? (is_unlocked ? 32'h1 : 32'h0) :
         32'h0;
 
     assign data_ready = 1'b1;

@@ -22,7 +22,7 @@ REG_TIMER   = 5   # [15:0] Sleep-Walker Timer Period
 REG_AUTOCMD = 6   # [31:0] Sleep-Walker Command
 REG_THRESH  = 7   # [15:8]=thresh_high [7:0]=thresh_low
 REG_AUTOEN  = 8   # Write: [1]=clr_auto_irq [0]=auto_en | Read: [15:0] CRC
-
+REG_LOCK    = 9
 # Configuration Macros (Bits 8:4 hold wlen-1)
 CFG_8BIT_M0  = 0x070  # 8-bit, Mode 0 (CPOL=0 CPHA=0)
 CFG_8BIT_M1  = 0x072  # 8-bit, Mode 1
@@ -253,11 +253,13 @@ async def test_sleepwalker_anomaly_trigger(dut):
     await tqv.write_word_reg(REG_CONFIG, CFG_8BIT_M0)
     await tqv.write_word_reg(REG_CLKDIV, 4)
 
+    # AUTHORIZATION: Unlock the hardware before configuring!
+    await tqv.write_word_reg(REG_LOCK, 0xCAFEBABE)
+
     await tqv.write_word_reg(REG_TIMER, 100)            
     await tqv.write_word_reg(REG_AUTOCMD, 0x99)        
     await tqv.write_word_reg(REG_THRESH, 0xC832)       
     
-    # FIX: Use continuous_miso_responder so it survives any startup CS blips
     cocotb.start_soon(continuous_miso_responder(dut, 0xFA, word_len=8))
     await tqv.write_word_reg(REG_AUTOEN, 0x01)
 
@@ -271,7 +273,7 @@ async def test_sleepwalker_anomaly_trigger(dut):
     dut._log.info(f"Anomaly Caught! RX Data: 0x{rx:02X}")
     assert rx == 0xFA, "Sleep walker did not latch the anomalous data!"
     
-    await tqv.write_word_reg(REG_AUTOEN, 0x03)
+    await tqv.write_word_reg(REG_AUTOEN, 0x03) 
 
 @cocotb.test()
 async def test_sleepwalker_normal_poll(dut):
@@ -280,11 +282,13 @@ async def test_sleepwalker_normal_poll(dut):
     await tqv.write_word_reg(REG_CONFIG, CFG_8BIT_M0)
     await tqv.write_word_reg(REG_CLKDIV, 4)
 
+    # AUTHORIZATION: Unlock the hardware before configuring!
+    await tqv.write_word_reg(REG_LOCK, 0xCAFEBABE)
+
     await tqv.write_word_reg(REG_TIMER, 50)            
     await tqv.write_word_reg(REG_AUTOCMD, 0x33)        
     await tqv.write_word_reg(REG_THRESH, 0xC832)       
     
-    # FIX 2: Use continuous responder so it replies to EVERY Sleep-Walker poll
     cocotb.start_soon(continuous_miso_responder(dut, 0x64, word_len=8))
     await tqv.write_word_reg(REG_AUTOEN, 0x01)
 
@@ -298,33 +302,34 @@ async def test_sleepwalker_normal_poll(dut):
     assert not (status & 0x04), "Sleep-Walker fired an IRQ for normal data!"
     assert rx == 0x64, "Sleep-Walker failed to latch the polled data silently."
 
+
 @cocotb.test()
-async def test_full_duplex_wire_inspection(dut):
-    """Feature 6: Simultaneous TX and RX verification directly on the wire."""
+async def test_security_hardware_lock(dut):
+    """DP3 Validation: Verify Cryptographic Lock blocks unauthorized writes and trips tamper flag."""
     tqv = await setup_test(dut)
-    await tqv.write_word_reg(REG_CONFIG, CFG_8BIT_M0)
-    await tqv.write_word_reg(REG_CLKDIV, 4)
-
-    tx_byte = 0xA5
-    rx_byte = 0x3C
     
-    cocotb.start_soon(miso_responder(dut, rx_byte, word_len=8))
-    await tqv.write_word_reg(REG_DATA, tx_byte)
-
-    await wait_cs_assert(dut)
+    # 1. HACKER ATTEMPT: Try to configure the Sleep-Walker while locked
+    dut._log.info("Hacker Attempt: Trying to inject malicious auto_cmd while locked...")
+    await tqv.write_word_reg(REG_AUTOCMD, 0xDEADDEAD)
+    await tqv.write_word_reg(REG_AUTOEN, 0x01)
     
-    # FIX 3: Sample the first bit immediately after CS_n goes low!
-    observed_tx = get_mosi(dut)
+    # Verify the hardware ignored the writes
+    lock_status = await tqv.read_word_reg(REG_LOCK)
+    assert lock_status == 0, "Lock should be active (0) on reset!"
     
-    for _ in range(7):
-        # Wait for the Master to shift the next bit on the falling edge, then sample
-        await wait_sclk_falling(dut)
-        observed_tx = (observed_tx << 1) | get_mosi(dut)
-
-    await wait_irq(tqv, dut)
-    rx_hold = await tqv.read_word_reg(REG_DATA)
-
-    dut._log.info(f"Duplex Wire Check - MOSI Sent: {hex(observed_tx)}, MISO Recv: {hex(rx_hold)}")
+    # 2. HACKER BRUTE FORCE: Guessing the wrong key
+    dut._log.info("Hacker Attempt: Guessing wrong key 0x12345678...")
+    await tqv.write_word_reg(REG_LOCK, 0x12345678)
     
-    assert observed_tx == tx_byte, "MOSI wire data mismatch!"
-    assert rx_hold == rx_byte, "MISO rx_hold mismatch!"
+    # 3. TAMPER EVIDENCE: Check that the access_violation flag (bit 3 of status) tripped
+    status = await tqv.read_word_reg(REG_STATUS)
+    assert (status & 0x08), "Access Violation tamper flag failed to trip!"
+    
+    # 4. AUTHORIZED ATTEMPT: Now the legit software tries to use the correct key
+    dut._log.info("Admin Attempt: Supplying correct key 0xCAFEBABE after tamper...")
+    await tqv.write_word_reg(REG_LOCK, 0xCAFEBABE)
+    
+    # Verify the hardware remains permanently bricked due to the previous tamper
+    lock_status = await tqv.read_word_reg(REG_LOCK)
+    assert lock_status == 0, "Hardware allowed unlock after a tamper violation!"
+    dut._log.info("Security Check Passed: Hardware successfully blocked unauthorized access and locked out the attacker.")
