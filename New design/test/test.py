@@ -112,7 +112,7 @@ async def miso_responder(dut, miso_word, cpol=0, cpha=0, word_len=8, lsb_first=F
     return wire_bits  # Return the actual bits transmitted for CRC verification
 
 async def setup_test(dut):
-    clock = Clock(dut.clk, 100, unit="ns")
+    clock = Clock(dut.clk, 100, units="ns")
     cocotb.start_soon(clock.start())
     tqv = TinyQV(dut, PERIPHERAL_NUM)
     await tqv.reset()
@@ -333,3 +333,92 @@ async def test_security_hardware_lock(dut):
     lock_status = await tqv.read_word_reg(REG_LOCK)
     assert lock_status == 0, "Hardware allowed unlock after a tamper violation!"
     dut._log.info("Security Check Passed: Hardware successfully blocked unauthorized access and locked out the attacker.")
+
+# =============================================================================
+# PART 4: ADVANCED SECURITY EDGE CASES (NEW FOR DP3 VALIDATION)
+# =============================================================================
+
+@cocotb.test()
+async def test_security_unprivileged_spi_access(dut):
+    """DP3 Validation: Standard SPI operations and IRQ clearing work WITHOUT unlocking."""
+    tqv = await setup_test(dut)
+    await tqv.write_word_reg(REG_CONFIG, CFG_8BIT_M0)
+    await tqv.write_word_reg(REG_CLKDIV, 4)
+
+    # Ensure the hardware is currently locked (CAFEBABE key not provided)
+    lock_status = await tqv.read_word_reg(REG_LOCK)
+    assert lock_status == 0, "Device should be locked after Reset!"
+
+    # Perform standard SPI transmit/receive (Unprivileged Action)
+    cocotb.start_soon(miso_responder(dut, 0x55, word_len=8))
+    await tqv.write_word_reg(REG_DATA, 0xAA)
+
+    await wait_irq(tqv, dut)
+
+    rx = await tqv.read_word_reg(REG_DATA)
+    assert rx == 0x55, "Standard SPI operation was incorrectly blocked while locked!"
+
+    # Attempt to clear IRQ flag while locked
+    await tqv.write_word_reg(REG_STATUS, 0x02)
+    status = await tqv.read_word_reg(REG_STATUS)
+    assert not (status & 0x02), "Unable to clear standard IRQ flag while hardware is locked!"
+    dut._log.info("Standard SPI operations function normally even with Security Lock enabled.")
+
+@cocotb.test()
+async def test_security_read_unlock_status(dut):
+    """DP3 Validation: Reading REG_LOCK returns 1 when unlocked, 0 when locked."""
+    tqv = await setup_test(dut)
+
+    # Must be locked initially
+    assert (await tqv.read_word_reg(REG_LOCK)) == 0
+
+    # Unlock successfully
+    await tqv.write_word_reg(REG_LOCK, 0xCAFEBABE)
+    assert (await tqv.read_word_reg(REG_LOCK)) == 1
+
+    # Intentionally tamper with the lock
+    await tqv.write_word_reg(REG_LOCK, 0x12345678)
+    assert (await tqv.read_word_reg(REG_LOCK)) == 0
+    
+    # Attempting to unlock after a Tamper violation should fail
+    await tqv.write_word_reg(REG_LOCK, 0xCAFEBABE)
+    assert (await tqv.read_word_reg(REG_LOCK)) == 0
+    dut._log.info("REG_LOCK accurately reflects the internal is_unlocked status.")
+
+@cocotb.test()
+async def test_security_clear_auto_irq_while_locked(dut):
+    """DP3 Validation: OS can clear auto_irq even if the device is permanently locked (Tampered) by a hacker."""
+    tqv = await setup_test(dut)
+    await tqv.write_word_reg(REG_CONFIG, CFG_8BIT_M0)
+    await tqv.write_word_reg(REG_CLKDIV, 4)
+
+    # 1. Administrator configures the system
+    await tqv.write_word_reg(REG_LOCK, 0xCAFEBABE)
+    await tqv.write_word_reg(REG_TIMER, 1000)
+    await tqv.write_word_reg(REG_AUTOCMD, 0x99)
+    await tqv.write_word_reg(REG_THRESH, 0xC832)
+    await tqv.write_word_reg(REG_AUTOEN, 0x01)
+
+    # 2. Hacker deliberately tampers with the lock -> Causes Permanent Lockout
+    await tqv.write_word_reg(REG_LOCK, 0xBADF00D)
+
+    # 3. Sensor environment detects anomalous data
+    cocotb.start_soon(continuous_miso_responder(dut, 0xFA, word_len=8))
+
+    # Wait for the Sleep-Walker to trigger an automatic interrupt
+    cycles = 0
+    while not ((await tqv.read_word_reg(REG_STATUS)) & 0x04):
+        await ClockCycles(dut.clk, 5)
+        cycles += 5
+        assert cycles < 1000, "Sleep-Walker failed to trigger automatic interrupt!"
+
+    status = await tqv.read_word_reg(REG_STATUS)
+    assert (status & 0x08), "Access Violation (Tamper) flag must be asserted due to hacker!"
+
+    # 4. OS clears the emergency interrupt flag despite the device being deadlocked
+    dut._log.info("OS attempting to clear auto_irq while hardware is reporting a tamper attack...")
+    await tqv.write_word_reg(REG_AUTOEN, 0x02) # Write bit 1 to register 8 to clear the interrupt
+
+    status_after = await tqv.read_word_reg(REG_STATUS)
+    assert not (status_after & 0x04), "Error: Failed to clear auto_irq warning while locked!"
+    dut._log.info("OS successfully cleared the warning in an emergency scenario.")
