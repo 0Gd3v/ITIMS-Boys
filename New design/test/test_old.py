@@ -20,6 +20,13 @@ REG_CLKDIV = 2   # 6-bit clock divider
 REG_CONFIG = 3   # [0]=CPOL [1]=CPHA [2]=LSB_first [3]=manual_cs [6:4]=wlen-1
 REG_CS     = 4   # [0]=cs_assert  (manual CS only)
 
+# --- Added Extended Registers to demonstrate vulnerabilities in the old module ---
+REG_TIMER   = 5   
+REG_AUTOCMD = 6   
+REG_THRESH  = 7   
+REG_AUTOEN  = 8   
+REG_LOCK    = 9   
+
 # Config register helpers  — [6:4] = word_len-1,  default 8-bit = 0b111 -> 0x70
 CFG_MODE0  = 0x70   # CPOL=0 CPHA=0  8-bit  MSB-first
 CFG_MODE1  = 0x72   # CPOL=0 CPHA=1
@@ -80,51 +87,28 @@ async def wait_irq(tqv, dut, timeout_cycles=1000):
 
 # =============================================================================
 # MISO responder — background coroutine, run with cocotb.start_soon()
-#
-# Drives ui_in[0] (MISO) bit-by-bit, synchronised to SCLK, for one transfer.
-#
-# SPI mode drive/sample edge rules:
-#   Mode 0 (CPOL=0 CPHA=0): sample RISING  → drive on FALLING
-#   Mode 1 (CPOL=0 CPHA=1): sample FALLING → drive on RISING
-#   Mode 2 (CPOL=1 CPHA=0): sample FALLING → drive on RISING
-#   Mode 3 (CPOL=1 CPHA=1): sample RISING  → drive on FALLING
-#   Simplified: drive_on_falling = (cpol == cpha)
-#
-# The peripheral has a 2-stage synchronizer on ui_in (2 system-clock latency).
-# All MISO tests use clk_div >= 4 (half-period = 5 sys-clks) so MISO is always
-# stable well before the sample edge.
-#
-# lsb_first=True: drives bits LSB-first on the wire so that after the
-# peripheral's internal reversal, rx_hold equals the value passed in.
 # =============================================================================
 async def miso_responder(dut, miso_byte, cpol=0, cpha=0, word_len=8, lsb_first=False):
     if lsb_first:
-        # Drive LSB-first; peripheral reverses on latch → rx_hold == miso_byte
         wire_bits = [(miso_byte >> i) & 1 for i in range(word_len)]
     else:
-        # Drive MSB-first
         wire_bits = [(miso_byte >> (word_len - 1 - i)) & 1 for i in range(word_len)]
 
-    # Modes where cpol==cpha sample on rising → drive on falling (and vice-versa)
     drive_on_falling = (cpol == cpha)
 
-    # Wait for CS to assert before touching the bus
     await wait_cs_assert(dut)
 
-    # Drive the first bit immediately (must be stable before the first sample edge)
     dut.ui_in.value = wire_bits[0]
     await ClockCycles(dut.clk, 1)
 
-    # Each remaining bit is updated on the drive edge
     for bit in wire_bits[1:]:
         if drive_on_falling:
             await wait_sclk_falling(dut)
         else:
             await wait_sclk_rising(dut)
         dut.ui_in.value = bit
-        await ClockCycles(dut.clk, 1)   # settle before the next sample edge
+        await ClockCycles(dut.clk, 1)   
 
-    # Hold MISO stable until transfer ends, then release
     await wait_cs_deassert(dut)
     dut.ui_in.value = 0
 
@@ -132,17 +116,17 @@ async def miso_responder(dut, miso_byte, cpol=0, cpha=0, word_len=8, lsb_first=F
 # Test setup
 # =============================================================================
 async def setup_test(dut):
-    """Start 10 MHz clock, reset DUT, initialise MISO to 0."""
-    clock = Clock(dut.clk, 100, unit="ns")   # cocotb v2: 'unit' not 'units'
+    clock = Clock(dut.clk, 100, unit="ns")   
     cocotb.start_soon(clock.start())
     tqv = TinyQV(dut, PERIPHERAL_NUM)
     await tqv.reset()
-    dut.ui_in.value = 0   # MISO starts deasserted
+    dut.ui_in.value = 0   
     return tqv
 
 # =============================================================================
-# Case 1 — Busy bit across different clock dividers
+# PART 1: ORIGINAL FUNCTIONAL TESTS (UNCHANGED)
 # =============================================================================
+
 @cocotb.test()
 async def test_varying_clock_speeds(dut):
     """Case 1: Verify SPI busy bit clears after transmission for dividers 0, 4, 10."""
@@ -151,14 +135,11 @@ async def test_varying_clock_speeds(dut):
     for divider in [0, 4, 10]:
         dut._log.info(f"Testing with clk_divider = {divider}")
         await tqv.write_byte_reg(REG_CLKDIV, divider)
-        await tqv.write_byte_reg(REG_DATA, 0xAA)   # Write to addr 0 starts TX
+        await tqv.write_byte_reg(REG_DATA, 0xAA)   
 
         await wait_idle(tqv, dut)
         dut._log.info(f"Transmission finished for divider {divider}")
 
-# =============================================================================
-# Case 2 — Back-to-back transmissions; CS must return high between them
-# =============================================================================
 @cocotb.test()
 async def test_back_to_back_transmissions(dut):
     """Case 2: CS returns high (idle) after two consecutive back-to-back writes."""
@@ -168,21 +149,14 @@ async def test_back_to_back_transmissions(dut):
         await wait_idle(tqv, dut)
         await tqv.write_byte_reg(REG_DATA, data)
 
-    # Wait well past the last transfer, then check CS is deasserted
     await ClockCycles(dut.clk, 200)
     assert get_cs_n(dut) == 1, "CS should be high (idle) after all transmissions"
 
-# =============================================================================
-# Case 3 — Reset mid-transfer clears busy and CS
-# =============================================================================
 @cocotb.test()
 async def test_reset_during_transmission(dut):
     """Case 3: Mid-transfer reset clears busy flag and deasserts CS."""
     tqv = await setup_test(dut)
 
-    # Use a large clock divider so the peripheral's SPI transfer (~2048 cycles)
-    # outlasts the full-peripheral read frame (~262 cycles), keeping busy=1
-    # long enough to be observed before we assert reset.
     await tqv.write_byte_reg(REG_CLKDIV, 62)
     await tqv.write_byte_reg(REG_DATA, 0xFF)
     await ClockCycles(dut.clk, 20)
@@ -197,29 +171,19 @@ async def test_reset_during_transmission(dut):
     assert not (status & 0x01), "Busy bit should be 0 after reset"
     assert get_cs_n(dut) == 1,  "CS_n should be high after reset"
 
-# =============================================================================
-# Case 4 — MSB-first: first SCLK rising edge must show MOSI=1 for 0x80
-# =============================================================================
 @cocotb.test()
 async def test_msb_first_verification(dut):
     """Case 4: Transmitting 0x80 (1000_0000) produces MOSI=1 on the first bit."""
     tqv = await setup_test(dut)
 
     await tqv.write_byte_reg(REG_DATA, 0x80)
-
-    # Wait for CS to assert
     await wait_cs_assert(dut)
-
-    # Wait for the first SCLK rising edge
     await wait_sclk_rising(dut)
 
     mosi = get_mosi(dut)
     assert mosi == 1, f"MOSI should be 1 for MSB of 0x80, got {mosi}"
     dut._log.info(f"MSB check: MOSI={mosi} -- OK")
 
-# =============================================================================
-# Case 5 — Divider timing precision
-# =============================================================================
 @cocotb.test()
 async def test_divider_timing_precision(dut):
     """Case 5: SCLK half-period equals (clk_div + 1) system clock cycles."""
@@ -230,7 +194,6 @@ async def test_divider_timing_precision(dut):
 
     await wait_cs_assert(dut)
 
-    # Measure how many rising sys-clk edges pass before SCLK toggles
     count = 0
     initial = get_sclk(dut)
     while get_sclk(dut) == initial:
@@ -241,9 +204,6 @@ async def test_divider_timing_precision(dut):
     assert count >= divider_val, \
         f"SCLK toggled too fast: expected >= {divider_val} cycles, got {count}"
 
-# =============================================================================
-# Case 6 — Basic MISO receive, Mode 0
-# =============================================================================
 @cocotb.test()
 async def test_miso_basic_receive(dut):
     """Case 6: Receive 0xC3 on MISO in Mode 0 (CPOL=0, CPHA=0)."""
@@ -254,7 +214,7 @@ async def test_miso_basic_receive(dut):
     await tqv.write_byte_reg(REG_CLKDIV, 4)
 
     cocotb.start_soon(miso_responder(dut, miso_byte, cpol=0, cpha=0))
-    await tqv.write_byte_reg(REG_DATA, 0x00)   # Dummy TX, starts transfer
+    await tqv.write_byte_reg(REG_DATA, 0x00)   
 
     await wait_irq(tqv, dut)
 
@@ -262,20 +222,16 @@ async def test_miso_basic_receive(dut):
     dut._log.info(f"MISO basic: expected=0x{miso_byte:02X}  got=0x{rx:02X}")
     assert rx == miso_byte, f"RX mismatch: expected 0x{miso_byte:02X}, got 0x{rx:02X}"
 
-    await tqv.write_byte_reg(REG_STATUS, 0x02)   # Clear IRQ (write-1-clear)
+    await tqv.write_byte_reg(REG_STATUS, 0x02)   
     status = await tqv.read_byte_reg(REG_STATUS)
     assert not (status & 0x02), "IRQ should be 0 after W1C"
 
-# =============================================================================
-# Case 7 — MISO receive across all four SPI modes
-# =============================================================================
 @cocotb.test()
 async def test_miso_all_spi_modes(dut):
     """Case 7: Correct MISO sampling in all four SPI modes (0-3)."""
     tqv = await setup_test(dut)
     await tqv.write_byte_reg(REG_CLKDIV, 4)
 
-    # (CPOL, CPHA, config_byte, test_byte_for_miso, label)
     modes = [
         (0, 0, CFG_MODE0, 0xA5, "Mode 0 CPOL=0 CPHA=0"),
         (0, 1, CFG_MODE1, 0x5A, "Mode 1 CPOL=0 CPHA=1"),
@@ -300,16 +256,12 @@ async def test_miso_all_spi_modes(dut):
         await tqv.write_byte_reg(REG_STATUS, 0x02)
         await ClockCycles(dut.clk, 10)
 
-# =============================================================================
-# Case 8 — LSB-first receive
-# =============================================================================
 @cocotb.test()
 async def test_miso_lsb_first(dut):
     """Case 8: LSB-first receive — peripheral reverses bits before latching rx_hold."""
     tqv = await setup_test(dut)
-    miso_byte = 0xB4   # 1011_0100
+    miso_byte = 0xB4   
 
-    # CFG_LSBF = 0x74: wlen-1=7 (bits[6:4]=0b111), lsb_first=1 (bit[2]=1), Mode 0
     await tqv.write_byte_reg(REG_CONFIG, CFG_LSBF)
     await tqv.write_byte_reg(REG_CLKDIV, 4)
 
@@ -327,9 +279,6 @@ async def test_miso_lsb_first(dut):
 
     await tqv.write_byte_reg(REG_STATUS, 0x02)
 
-# =============================================================================
-# Case 9 — IRQ lifecycle: asserts on transfer complete, clears on W1C, re-arms
-# =============================================================================
 @cocotb.test()
 async def test_miso_irq_flag(dut):
     """Case 9: IRQ=0 at idle, IRQ=1 after transfer, cleared by W1C, re-arms next transfer."""
@@ -337,11 +286,9 @@ async def test_miso_irq_flag(dut):
     await tqv.write_byte_reg(REG_CONFIG, CFG_MODE0)
     await tqv.write_byte_reg(REG_CLKDIV, 4)
 
-    # --- IRQ must be 0 at idle ---
     status = await tqv.read_byte_reg(REG_STATUS)
     assert not (status & 0x02), "IRQ should be 0 at idle"
 
-    # --- Transfer 1: TX=0xAA, MISO=0x55 ---
     cocotb.start_soon(miso_responder(dut, 0x55))
     await tqv.write_byte_reg(REG_DATA, 0xAA)
 
@@ -355,12 +302,10 @@ async def test_miso_irq_flag(dut):
     assert rx == 0x55, f"Transfer 1 RX should be 0x55, got 0x{rx:02X}"
     dut._log.info(f"Transfer 1: RX=0x{rx:02X}, status=0b{status:08b} -- OK")
 
-    # --- Write-1-clear IRQ ---
     await tqv.write_byte_reg(REG_STATUS, 0x02)
     status = await tqv.read_byte_reg(REG_STATUS)
     assert not (status & 0x02), "IRQ should be 0 after W1C"
 
-    # --- Transfer 2: IRQ must re-arm correctly ---
     cocotb.start_soon(miso_responder(dut, 0xAA))
     await tqv.write_byte_reg(REG_DATA, 0x55)
 
@@ -372,24 +317,19 @@ async def test_miso_irq_flag(dut):
 
     await tqv.write_byte_reg(REG_STATUS, 0x02)
 
-# =============================================================================
-# Case 10 — Full duplex: MOSI and MISO correct in the same transfer
-# =============================================================================
 @cocotb.test()
 async def test_miso_full_duplex(dut):
     """Case 10: MOSI bits (observed per-clock) and MISO rx_hold are both correct simultaneously."""
     tqv = await setup_test(dut)
-    tx_byte   = 0xA5   # 1010_0101
-    miso_byte = 0x3C   # 0011_1100
+    tx_byte   = 0xA5   
+    miso_byte = 0x3C   
 
     await tqv.write_byte_reg(REG_CONFIG, CFG_MODE0)
-    await tqv.write_byte_reg(REG_CLKDIV, 5)   # half-period = 6 sys-clks
+    await tqv.write_byte_reg(REG_CLKDIV, 5)   
 
-    # Start MISO driver before triggering TX
     cocotb.start_soon(miso_responder(dut, miso_byte, cpol=0, cpha=0))
     await tqv.write_byte_reg(REG_DATA, tx_byte)
 
-    # Wait for CS to assert, then sample MOSI on each of the 8 SCLK rising edges
     await wait_cs_assert(dut)
     observed_tx = 0
     for bit_idx in range(8):
@@ -398,7 +338,6 @@ async def test_miso_full_duplex(dut):
         observed_tx = (observed_tx << 1) | bit
         dut._log.info(f"  MOSI bit {7 - bit_idx}: {bit}")
 
-    # Wait for transfer complete, then read RX
     await wait_irq(tqv, dut)
     rx = await tqv.read_byte_reg(REG_DATA)
 
@@ -415,3 +354,60 @@ async def test_miso_full_duplex(dut):
         f"MISO mismatch: expected 0x{miso_byte:02X}, got 0x{rx:02X}"
 
     await tqv.write_byte_reg(REG_STATUS, 0x02)
+
+
+# =============================================================================
+# PART 2: VULNERABILITY DEMONSTRATION EXPLOITS (NEW FOR DP3 REPORT)
+# =============================================================================
+
+@cocotb.test()
+async def test_sec_fail_unauthorized_sleepwalker_hijack(dut):
+    """
+    SECURITY FLAW 1: Zero-Trust Failure. 
+    Demonstrates that the old hardware allows anyone to hijack the Sleep-Walker 
+    without requiring a password/hardware lock.
+    """
+    tqv = await setup_test(dut)
+    
+    dut._log.info("Simulating Hacker hijacking the Sleep-Walker configuration...")
+    await tqv.write_byte_reg(REG_CONFIG, CFG_MODE0)
+    await tqv.write_byte_reg(REG_CLKDIV, 4)
+    
+    # 1. Hacker directly writes malicious thresholds and enables the system
+    # (Notice: No CAFEBABE unlock key is sent prior to this!)
+    await tqv.write_word_reg(REG_THRESH, 0xFFFF) # Always trigger anomaly
+    await tqv.write_word_reg(REG_AUTOEN, 0x01)   # Enable immediately
+    
+    # Simulate a dummy sensor responding
+    cocotb.start_soon(miso_responder(dut, 0x55, word_len=8))
+    
+    # Wait for the unauthorized sleep-walker cycle to execute
+    await ClockCycles(dut.clk, 250)
+    
+    status = await tqv.read_byte_reg(REG_STATUS)
+    
+    # In a SECURE system, the Sleep-Walker would have rejected the write, 
+    # meaning auto_irq (bit 2) would be 0.
+    # Because this is the old insecure module, the assertion below will intentionally FAIL!
+    assert not (status & 0x04), "SECURITY FLAW EXPLOITED: The hardware executed an unauthorized Sleep-Walker command!"
+
+@cocotb.test()
+async def test_sec_fail_no_tamper_detection(dut):
+    """
+    SECURITY FLAW 2: Missing Tamper Evidence.
+    Demonstrates that the old hardware does not catch or report brute-force attacks.
+    """
+    tqv = await setup_test(dut)
+    
+    dut._log.info("Simulating Hacker brute-force attack on the Lock Register...")
+    
+    # Hacker attempts to write garbage data to the Lock Register (Addr 9)
+    await tqv.write_word_reg(REG_LOCK, 0xDEADBEEF)
+    
+    # Check if the hardware flagged the malicious intrusion attempt
+    status = await tqv.read_byte_reg(REG_STATUS)
+    
+    # In your NEW secure system, this would flip bit 3 (0x08) to HIGH (Tamper Flag).
+    # Because this is the old insecure module, it doesn't know what a tamper is.
+    # The assertion below will intentionally FAIL, proving the lack of detection!
+    assert (status & 0x08), "SECURITY FLAW EXPLOITED: Hardware lacks Tamper Evidence! The brute-force attack went completely undetected."
