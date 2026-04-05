@@ -1,17 +1,10 @@
 # Lessons Learned
 
-## 1. Technical Insights: Physical Design & Timing
-- **Utilization vs. Routability**: We learned that a lower utilization (**11.7249%**) is not wasteful but essential for complex systems like ours (4,013 cells). "Packing" logic too tightly often leads to unresolvable routing congestion and timing violations.
-- **Post-Layout Reality Check**: Functional verification (RTL simulation) is not enough. Our experience with the **Standard Delay Format (.sdf)** proved that physical wire delays can significantly impact high-speed protocols. Validating with `.sdf` ensures the design works on actual silicon, not just in theory.
+## 1. Security is a Physical Constraint
+We learned that hardware security is fundamentally about area and timing trade-offs. The 140% "Security Tax" on area proved that protecting an SoC at the gate level requires a complete reimagining of the floorplan and routing strategy compared to standard functional IPs.
 
-## 2. AI Collaboration Strategy
-- **Prompt Engineering**: The quality of AI output is directly proportional to the specificity of the input. We treated AI as a "junior engineer"—great for boilerplate Verilog (like the initial FSM) but requiring strict supervision for critical timing paths.
-- **Verification Assistant**: AI proved invaluable in analyzing verbose logs (OpenLane reports) and generating complex `cocotb` testbench assertions that would have taken hours to write manually.
+## 2. The Importance of SDF Back-Annotation
+Functional RTL simulation is not enough for high-speed protocols. Performing **Standard Delay Format (.sdf)** verification in `cocotb` was a turning point, as it revealed that physical wire delays could impact our security lockout timing—a detail that was invisible in baseline RTL simulation.
 
-## 3. Team & Workflow Management
-- **Git Discipline is Crucial**: We learned the hard way that "force pushing" or ignoring conflicts leads to chaos. Adopting a strict `git pull --rebase` workflow saved the team from "detached head" states and lost work.
-- **Role Specialization**: Assigning dedicated roles (Documentation, Physical Design, Verification) allowed us to parallelize work. While Kien focused on closing timing (WNS 0ns), Hai could simultaneously document the architectural decisions, significantly speeding up the submission process.
-
-## 4. Future Improvements
-- **Automated CI/CD**: For the next challenge, we plan to implement GitHub Actions to automatically run the `cocotb` testbench and OpenLane flow on every push, ensuring immediate feedback on integration errors.
-- **Hardware-Software Co-Design**: We realized that defining the Register Map (0x00, 0x01, 0x02) early is critical. Future projects will start with a frozen address specification to avoid integration headaches later.
+## 3. Version Control and Team Synergy
+With five engineers working on a dense 9,435-cell design, we learned that strict **Git discipline** (rebase over merge) is non-negotiable. Synchronizing the Register Map early allowed our RTL and Verification teams to work in parallel, significantly accelerating our submission timeline.
