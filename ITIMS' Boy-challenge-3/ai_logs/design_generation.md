@@ -547,3 +547,229 @@ The biggest lever is distinguishing what needs to be stored from what can be der
 The CPHA handling is the trickiest part to get right cheaply. Rather than adding a separate phase-tracking state, the design exploits the fact that `cfg_cpha` can serve double duty: it sets the initial `spi_clk_r` value before the first edge and it defines which half-period level triggers sampling vs. shifting. This means modes 0–3 all run through the same code path with zero conditional branches.
 
 The `wire-OR` pattern on `data_out` (`({8{addr==X}} & value) | ...`) tends to synthesise to a tree of AND-OR gates rather than a chain of 2:1 muxes, giving the synthesiser more freedom to balance the timing path.
+
+## Conversation 5: 
+**Timestamp**: 2026-03-26 11:00:00
+
+**Tool**: Gemini
+
+**Purpose**: FIFO Burst module generator 
+
+**Prompt**:Please create a new peripheral code for DP_3 that meets the above requirements.
+**Response**: Hello! This is a huge step forward for the ITIMS-Boys team! Switching to a FIFO will completely solve the CPU bottleneck issue you encountered in DP_2.
+
+Below is the entirely new Verilog source code for the peripheral.v file of DP_3. This code is designed to be compatible with the wider address space of the tinyqv-full-peripheral-template, including a TX FIFO (4 bytes) and an RX FIFO (4 bytes), along with an autonomous state machine (FSM) for data transmission.
+
+peripheral.v Source Code (Burst FIFO Version)
+
+Please copy the entire code block below and overwrite it in the ~/AI HDL/OpenLane/designs/DP_3/src/peripheral.v file:
+```verilog
+`timescale 1ns / 1ps
+ 
+module tqvp_spi_master (
+   input  wire       clk,
+   input  wire       rst_n,
+   
+   // Internal Bus Interface (From CPU via Wrapper)
+   input  wire [3:0] addr,     // 4-bit address (Supports 16 registers)
+   input  wire [7:0] wdata,    // Write data from CPU
+   input  wire       we,       // Write Enable
+   input  wire       re,       // Read Enable
+   output reg  [7:0] rdata,    // Read data to CPU
+   
+   // Physical SPI Interface
+   output reg        sck,
+   output reg        mosi,
+   input  wire       miso,
+   output reg        cs_n,
+   
+   // Interrupt Signal
+   output wire       irq
+);
+ 
+   // ==========================================
+   // 1. MEMORY MAP
+   // ==========================================
+   // 0x0: TX_FIFO_DATA (Write: Push data into TX FIFO)
+   // 0x1: RX_FIFO_DATA (Read: Pop data from RX FIFO)
+   // 0x2: STATUS_REG   (Read: FIFO & SPI Status)
+   // 0x3: CTRL_REG     (Write/Read: Configure SPI enable, interrupts)
+ 
+   // ==========================================
+   // 2. TX AND RX FIFO DECLARATION (4 bytes deep)
+   // ==========================================
+   reg [7:0] tx_fifo [0:3];
+   reg [7:0] rx_fifo [0:3];
+   
+   reg [1:0] tx_wr_ptr, tx_rd_ptr;
+   reg [2:0] tx_count; // Counts from 0 to 4
+   
+   reg [1:0] rx_wr_ptr, rx_rd_ptr;
+   reg [2:0] rx_count;
+ 
+   // FIFO Status Flags
+   wire tx_full  = (tx_count == 4);
+   wire tx_empty = (tx_count == 0);
+   wire rx_full  = (rx_count == 4);
+   wire rx_empty = (rx_count == 0);
+ 
+   // ==========================================
+   // 3. CONTROL & STATUS REGISTERS
+   // ==========================================
+   reg ctrl_spi_en;
+   reg ctrl_irq_en;
+   reg spi_busy;
+ 
+   // Assign interrupt signal (IRQ goes high when RX has data and interrupts are enabled)
+   assign irq = ctrl_irq_en & (~rx_empty);
+ 
+   // Handle CPU Register READ (Read Operation)
+   always @(*) begin
+        rdata = 8'h00;
+        if (re) begin
+            case (addr)
+                4'h1: rdata = rx_empty ? 8'h00 : rx_fifo[rx_rd_ptr]; // Read RX FIFO
+                4'h2: rdata = {3'b000, rx_empty, rx_full, tx_empty, tx_full, spi_busy}; // Read Status
+                4'h3: rdata = {6'b000000, ctrl_irq_en, ctrl_spi_en}; // Read Control
+                default: rdata = 8'h00;
+            endcase
+        end
+   end
+ 
+   // Handle CPU Register WRITE (Write Operation) and manage FIFO Pointers
+   always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            tx_wr_ptr   <= 0;
+            rx_rd_ptr   <= 0;
+            ctrl_spi_en <= 0;
+            ctrl_irq_en <= 0;
+        end else if (we) begin
+            case (addr)
+                4'h0: begin // Write to TX FIFO
+                    if (!tx_full) begin
+                        tx_fifo[tx_wr_ptr] <= wdata;
+                        tx_wr_ptr <= tx_wr_ptr + 1;
+                    end
+                end
+                4'h3: begin // Write Configuration
+                    ctrl_spi_en <= wdata[0];
+                    ctrl_irq_en <= wdata[1];
+                end
+            endcase
+        end else if (re && addr == 4'h1 && !rx_empty) begin
+            // CPU reads RX FIFO successfully -> Increment read pointer
+            rx_rd_ptr <= rx_rd_ptr + 1;
+        end
+   end
+ 
+   // ==========================================
+   // 4. SPI AUTONOMOUS SEQUENCER (FSM)
+   // ==========================================
+   localparam IDLE  = 2'b00;
+   localparam SHIFT = 2'b01;
+   localparam DONE  = 2'b10;
+ 
+   reg [1:0] state;
+   reg [2:0] bit_cnt;
+   reg [7:0] shift_reg_tx;
+   reg [7:0] shift_reg_rx;
+ 
+   // FIFO Counter Logic (Manage data inventory)
+   wire tx_push = (we && addr == 4'h0 && !tx_full);
+   wire tx_pop  = (state == IDLE && !tx_empty && ctrl_spi_en); // SPI pops data
+   
+   wire rx_push = (state == DONE && !rx_full);                 // SPI pushes data
+   wire rx_pop  = (re && addr == 4'h1 && !rx_empty);           // CPU pops data
+ 
+   always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            tx_count <= 0;
+        end else begin
+            case ({tx_push, tx_pop})
+                2'b10: tx_count <= tx_count + 1; // Only CPU pushes
+                2'b01: tx_count <= tx_count - 1; // Only SPI pops
+                default: tx_count <= tx_count;   // Push and pop simultaneously or neither
+            endcase
+        end
+   end
+ 
+   always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            rx_count <= 0;
+        end else begin
+            case ({rx_push, rx_pop})
+                2'b10: rx_count <= rx_count + 1;
+                2'b01: rx_count <= rx_count - 1;
+                default: rx_count <= rx_count;
+            endcase
+        end
+   end
+ 
+   // SPI FSM: Automatic Data Transmission
+   always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            state        <= IDLE;
+            sck          <= 0;
+            mosi         <= 0;
+            cs_n         <= 1;
+            spi_busy     <= 0;
+            bit_cnt      <= 0;
+            tx_rd_ptr    <= 0;
+            rx_wr_ptr    <= 0;
+        end else begin
+            case (state)
+                IDLE: begin
+                    sck <= 0;
+                    if (!tx_empty && ctrl_spi_en) begin
+                        // Fetch byte from TX FIFO to shift register
+                        shift_reg_tx <= tx_fifo[tx_rd_ptr];
+                        tx_rd_ptr    <= tx_rd_ptr + 1;
+                        cs_n         <= 0;
+                        spi_busy     <= 1;
+                        bit_cnt      <= 7;
+                        state        <= SHIFT;
+                    end else begin
+                        cs_n     <= 1;
+                        spi_busy <= 0;
+                    end
+                end
+ 
+                SHIFT: begin
+                    // Simulate SPI Mode 0: MOSI output on falling edge, SCK toggles
+                    sck <= ~sck;
+                    if (sck == 0) begin
+                        mosi <= shift_reg_tx[bit_cnt]; // Shift out bit
+                    end else begin
+                        shift_reg_rx[bit_cnt] <= miso; // Shift in bit
+                        if (bit_cnt == 0) begin
+                            state <= DONE;
+                        end else begin
+                            bit_cnt <= bit_cnt - 1;
+                        end
+                    end
+                end
+ 
+                DONE: begin
+                    sck <= 0;
+                    if (!rx_full) begin
+                        rx_fifo[rx_wr_ptr] <= shift_reg_rx; // Push into RX FIFO
+                        rx_wr_ptr <= rx_wr_ptr + 1;
+                    end
+                    // If TX FIFO still has data -> Continue Burst
+                    if (!tx_empty) begin
+                        shift_reg_tx <= tx_fifo[tx_rd_ptr];
+                        tx_rd_ptr    <= tx_rd_ptr + 1;
+                        bit_cnt      <= 7;
+                        state        <= SHIFT;
+                    end else begin
+                        cs_n  <= 1; // Out of data, pull CS_n high
+                        state <= IDLE;
+                    end
+                end
+            endcase
+        end
+   end
+ 
+endmodule
+```
+
