@@ -23,7 +23,6 @@ module tqvp_spi_master (
     reg [7:0]  thresh_high, thresh_low;
     reg [31:0] auto_cmd;      
 
-    // PHỤC HỒI: Tách TX và RX để bảo toàn Timing SPI
     reg [31:0] tx_shift, rx_shift, rx_hold;       
     reg [15:0] crc_reg;       
     reg [5:0]  clk_div, div_cnt;     
@@ -69,7 +68,6 @@ module tqvp_spi_master (
                 endcase
             end
 
-            // TỐI ƯU MUX ĐƯỢC GIỮ LẠI: Gán trực tiếp data_in để loại bỏ Logic Tổ Hợp
             if (write_en && address == 6'h0 && !busy) begin
                 busy <= 1'b1;
                 case ({cfg_lsb, data_write_n})
@@ -102,16 +100,13 @@ module tqvp_spi_master (
                     spi_clk_r <= ~spi_clk_r;
 
                     if (spi_clk_r == cfg_cpha) begin
-                        // Lấy mẫu (Sample)
                         rx_shift <= {rx_shift[30:0], miso};
                         crc_reg  <= {crc_reg[14:0], 1'b0} ^ (crc_fb ? 16'h1021 : 16'h0000);
                     end else begin
-                        // Dịch bit (Shift)
                         tx_shift <= {tx_shift[30:0], 1'b0};
                         if (bit_cnt == 5'h0) begin
                             busy <= 1'b0;
                             
-                            // Trả lại logic hỗ trợ đa kích thước (8/16/32 bit)
                             if (cfg_wlen == 5'd7) begin
                                 rx_hold <= cfg_lsb ? {24'h0, r0_r} : {24'h0, rx_shift[7:0]};
                             end else if (cfg_wlen == 5'd15) begin
