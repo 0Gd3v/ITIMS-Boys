@@ -1,181 +1,191 @@
-/*
- * Enhanced SPI Master Peripheral for TinyQV
- * ============================================
- * New features vs. simple version:
- *   1. Full SPI modes 0-3 (CPOL + CPHA)        — 2 config bits
- *   2. MISO receive shift register              — full duplex
- *   3. Configurable word length (4–8 bits)      — 3 config bits
- *   4. LSB-first / MSB-first selectable         — 1 config bit
- *   5. Manual CS control (multi-byte bursts)    — 1 config bit
- *   6. Transfer-complete IRQ flag               — 1 status bit, write-1-clear
- *
- * Register Map:
- *   Addr 0  TX Data   (W) / RX Data (R)  — write starts transfer if not busy
- *   Addr 1  Status    (R/W) [0]=busy  [1]=irq (write 1 to clear irq)
- *   Addr 2  Clock Div (R/W) 6-bit value; SCLK = sys_clk / (2*(div+1))
- *   Addr 3  Config    (R/W) [0]=CPOL  [1]=CPHA  [2]=LSB_first
- *                           [3]=manual_cs  [6:4]=word_len-1 (0→1-bit…7→8-bit)
- *   Addr 4  CS Ctrl   (W)   [0]=cs_assert  (only active when manual_cs=1)
- *
- * PPA decisions:
- *   - busy/cs_n are combinatorial wires            → 0 extra FFs
- *   - CPOL is XOR'd at the output wire             → 0 extra mux in state machine
- *   - CPHA reuses spi_clk_r initial value          → 0 extra state bits
- *   - LSB-first reversal only at load time         → 0 per-cycle mux cost
- *   - IRQ reuses bit_cnt==1 terminal condition     → no extra comparator
- *   - word_len stored as terminal count, loaded once per transfer
- *   - div counter is 6-bit (not 8-bit)             → 4 fewer FFs
- *   - wire-OR data_out                             → shallower mux cone
- */
-
 `default_nettype none
 
 module tqvp_spi_master (
-    input  wire       clk,
-    input  wire       rst_n,
-    input  wire [7:0] ui_in,        // ui_in[0] = MISO from external SPI device
-    output wire [7:0] uo_out,       // [0]=SCLK [1]=MOSI [2]=CS_n [3]=IRQ
-    input  wire [3:0] address,
-    input  wire       data_write,
-    input  wire [7:0] data_in,
-    output wire [7:0] data_out
+    input  wire        clk,
+    input  wire        rst_n,
+    input  wire [7:0]  ui_in,         
+    output wire [7:0]  uo_out,        
+
+    input  wire [5:0]  address,       
+    input  wire [31:0] data_in,       
+    
+    input  wire [1:0]  data_write_n,  
+    input  wire [1:0]  data_read_n,   
+    output wire [31:0] data_out,      
+    output wire        data_ready,    
+    output wire        user_interrupt 
 );
 
-    // =========================================================================
-    // Configuration (packed into one FF bank to help the synthesiser)
-    // =========================================================================
-    reg        cfg_cpol;
-    reg        cfg_cpha;
-    reg        cfg_lsb;
-    reg        cfg_mcs;        // Manual CS enable
-    reg [2:0]  cfg_wlen;       // Word length - 1  (0→1-bit … 7→8-bit; use 7 for 8-bit)
+    reg        cfg_cpol, cfg_cpha, cfg_lsb, cfg_mcs;
+    reg [4:0]  cfg_wlen;
+    reg        auto_en;
+    reg [15:0] timer_period, sleep_timer;
+    reg [7:0]  thresh_high, thresh_low;
+    reg [31:0] auto_cmd;      
 
-    // =========================================================================
-    // Operational registers
-    // =========================================================================
-    reg [7:0]  tx_shift;
-    reg [7:0]  rx_shift;
-    reg [7:0]  rx_hold;        // Latched complete RX word
-    reg [5:0]  clk_div;
-    reg [5:0]  div_cnt;
-    reg [3:0]  bit_cnt;        // Counts remaining bits (0 = idle)
-    reg        spi_clk_r;      // Internal clock state (CPOL applied at output)
-    reg        cs_force;       // Manual CS FF
-    reg        irq;            // Transfer-complete flag
+    reg [31:0] tx_shift, rx_shift, rx_hold;       
+    reg [15:0] crc_reg;       
+    reg [5:0]  clk_div, div_cnt;     
+    reg [4:0]  bit_cnt;
+    reg        busy, spi_clk_r, cs_force, irq, auto_irq;
 
-    // =========================================================================
-    // Combinatorial signals
-    // =========================================================================
-    wire busy     = (bit_cnt != 4'h0);
-    wire miso     = ui_in[0];           // MISO sourced from ui_in[0]
-    wire cs_n     = cfg_mcs ? ~cs_force : ~busy;
-    wire sclk_out = spi_clk_r ^ cfg_cpol;  // Free CPOL inversion at output
+    wire miso     = ui_in[0];
+    wire cs_n     = ~( (cfg_mcs ? cs_force : busy) );
+    wire sclk_out = spi_clk_r ^ cfg_cpol;
+    wire write_en = (data_write_n != 2'b11);
+    wire crc_fb   = crc_reg[15] ^ miso;
 
-    // LSB-first byte reversal — only evaluated at load time
-    wire [7:0] tx_load = cfg_lsb
-        ? {data_in[0], data_in[1], data_in[2], data_in[3],
-           data_in[4], data_in[5], data_in[6], data_in[7]}
-        : data_in;
+    // CPU Data Bytes
+    wire [7:0] d0 = data_in[7:0]; wire [7:0] d1 = data_in[15:8];
+    wire [7:0] d2 = data_in[23:16]; wire [7:0] d3 = data_in[31:24];
+    wire [7:0] d0_r = {d0[0], d0[1], d0[2], d0[3], d0[4], d0[5], d0[6], d0[7]};
+    wire [7:0] d1_r = {d1[0], d1[1], d1[2], d1[3], d1[4], d1[5], d1[6], d1[7]};
+    wire [7:0] d2_r = {d2[0], d2[1], d2[2], d2[3], d2[4], d2[5], d2[6], d2[7]};
+    wire [7:0] d3_r = {d3[0], d3[1], d3[2], d3[3], d3[4], d3[5], d3[6], d3[7]};
 
-    // =========================================================================
-    // State machine
-    // =========================================================================
+    reg [31:0] tx_load_val;
+    always @(*) begin
+        case (cfg_wlen)
+            5'd7:  tx_load_val = cfg_lsb ? {d0_r, 24'h0} : {d0, 24'h0};
+            5'd15: tx_load_val = cfg_lsb ? {d0_r, d1_r, 16'h0} : {d1, d0, 16'h0};
+            5'd31: tx_load_val = cfg_lsb ? {d0_r, d1_r, d2_r, d3_r} : {d3, d2, d1, d0};
+            default: tx_load_val = data_in << (5'd31 - cfg_wlen);
+        endcase
+    end
+
+    wire [7:0] a0 = auto_cmd[7:0];
+    wire [7:0] a1 = auto_cmd[15:8];
+    wire [7:0] a2 = auto_cmd[23:16]; wire [7:0] a3 = auto_cmd[31:24];
+    wire [7:0] a0_r = {a0[0], a0[1], a0[2], a0[3], a0[4], a0[5], a0[6], a0[7]};
+    wire [7:0] a1_r = {a1[0], a1[1], a1[2], a1[3], a1[4], a1[5], a1[6], a1[7]};
+    wire [7:0] a2_r = {a2[0], a2[1], a2[2], a2[3], a2[4], a2[5], a2[6], a2[7]};
+    wire [7:0] a3_r = {a3[0], a3[1], a3[2], a3[3], a3[4], a3[5], a3[6], a3[7]};
+
+    reg [31:0] auto_load_val;
+    always @(*) begin
+        case (cfg_wlen)
+            5'd7:  auto_load_val = cfg_lsb ? {a0_r, 24'h0} : {a0, 24'h0};
+            5'd15: auto_load_val = cfg_lsb ? {a0_r, a1_r, 16'h0} : {a1, a0, 16'h0};
+            5'd31: auto_load_val = cfg_lsb ? {a0_r, a1_r, a2_r, a3_r} : {a3, a2, a1, a0};
+            default: auto_load_val = auto_cmd << (5'd31 - cfg_wlen);
+        endcase
+    end
+
+    wire [7:0] r0_r = {rx_shift[0], rx_shift[1], rx_shift[2], rx_shift[3], rx_shift[4], rx_shift[5], rx_shift[6], rx_shift[7]};
+    wire [7:0] r1_r = {rx_shift[8], rx_shift[9], rx_shift[10], rx_shift[11], rx_shift[12], rx_shift[13], rx_shift[14], rx_shift[15]};
+    wire [7:0] r2_r = {rx_shift[16], rx_shift[17], rx_shift[18], rx_shift[19], rx_shift[20], rx_shift[21], rx_shift[22], rx_shift[23]};
+    wire [7:0] r3_r = {rx_shift[24], rx_shift[25], rx_shift[26], rx_shift[27], rx_shift[28], rx_shift[29], rx_shift[30], rx_shift[31]};
+
     always @(posedge clk) begin
         if (!rst_n) begin
-            tx_shift   <= 8'h00;
-            rx_shift   <= 8'h00;
-            rx_hold    <= 8'h00;
-            clk_div    <= 6'd3;
-            div_cnt    <= 6'h00;
-            bit_cnt    <= 4'h0;
-            spi_clk_r  <= 1'b0;
-            cs_force   <= 1'b0;
-            irq        <= 1'b0;
-            cfg_cpol   <= 1'b0;
-            cfg_cpha   <= 1'b0;
-            cfg_lsb    <= 1'b0;
-            cfg_mcs    <= 1'b0;
-            cfg_wlen   <= 3'd7;   // Default 8-bit
+            cfg_cpol <= 1'b0;
+            cfg_cpha <= 1'b0; cfg_lsb <= 1'b0; cfg_mcs <= 1'b0;
+            cfg_wlen <= 5'd7; tx_shift <= 32'h0; rx_shift <= 32'h0;
+            rx_hold <= 32'h0;
+            crc_reg <= 16'hFFFF; clk_div <= 6'd3; div_cnt <= 6'h00; bit_cnt <= 5'h0;
+            busy <= 1'b0;
+            spi_clk_r <= 1'b0; cs_force <= 1'b0; irq <= 1'b0;
+            auto_irq <= 1'b0; auto_en <= 1'b0; sleep_timer <= 16'h0;
+            timer_period <= 16'h0;
+            thresh_high <= 8'hFF; thresh_low <= 8'h00; auto_cmd <= 32'h0;
         end else begin
 
-            // ------------------------------------------------------------------
-            // CPU writes
-            // ------------------------------------------------------------------
-            if (data_write) begin
+            if (write_en && !busy) begin
                 case (address)
-                    4'h1: if (data_in[1]) irq <= 1'b0;  // Write-1-clear IRQ
-                    4'h2: clk_div <= data_in[5:0];
-                    4'h3: {cfg_wlen, cfg_mcs, cfg_lsb, cfg_cpha, cfg_cpol}
-                              <= {data_in[6:4], data_in[3:0]};
-                    4'h4: cs_force <= data_in[0];
+                    6'h1: if (data_in[1]) irq <= 1'b0;
+                    6'h2: clk_div <= data_in[5:0];
+                    6'h3: {cfg_wlen, cfg_mcs, cfg_lsb, cfg_cpha, cfg_cpol} <= {data_in[8:4], data_in[3:0]};
+                    6'h4: cs_force <= data_in[0];
+                    6'h5: timer_period <= data_in[15:0];
+                    6'h6: auto_cmd     <= data_in[31:0];
+                    6'h7: {thresh_high, thresh_low} <= {data_in[15:8], data_in[7:0]};
+                    6'h8: begin 
+                            if (data_in[0] && !auto_en) sleep_timer <= timer_period;
+                            auto_en <= data_in[0];
+                            if (data_in[1]) auto_irq <= 1'b0;
+                          end
                     default: ;
                 endcase
             end
 
-            // Start transfer (addr 0 write, not busy)
-            if (data_write && address == 4'h0 && !busy) begin
-                tx_shift  <= tx_load;
-                bit_cnt   <= {1'b0, cfg_wlen} + 4'h1;  // 1..8
-                div_cnt   <= 6'h00;
-                // CPHA=1: begin with clock high so first active edge is falling
-                spi_clk_r <= cfg_cpha;
-                irq       <= 1'b0;
-
-            end else if (busy) begin
-                if (div_cnt < clk_div) begin
-                    div_cnt <= div_cnt + 1'b1;
+            if (write_en && address == 6'h0 && !busy) begin
+                busy        <= 1'b1;
+                tx_shift    <= tx_load_val; 
+                rx_shift    <= 32'h0;
+                bit_cnt     <= cfg_wlen;
+                div_cnt     <= clk_div; 
+                spi_clk_r   <= cfg_cpha;
+                irq         <= 1'b0;
+                crc_reg     <= 16'hFFFF;
+            end 
+            
+            else if (!busy && auto_en) begin
+                if (sleep_timer != 16'h0) begin
+                    sleep_timer <= sleep_timer - 1'b1;
                 end else begin
-                    div_cnt   <= 6'h00;
+                    busy        <= 1'b1;
+                    tx_shift    <= auto_load_val; 
+                    rx_shift    <= 32'h0;
+                    bit_cnt     <= cfg_wlen;
+                    div_cnt     <= clk_div; 
+                    spi_clk_r   <= cfg_cpha;
+                    crc_reg     <= 16'hFFFF;
+                end
+            end
+
+            else if (busy) begin
+                if (div_cnt != 6'h00) begin
+                    div_cnt <= div_cnt - 1'b1;
+                end else begin
+                    div_cnt   <= clk_div;
                     spi_clk_r <= ~spi_clk_r;
 
-                    // -----------------------------------------------------------
-                    // CPHA=0: sample on rising (spi_clk_r==0→1), shift on fall
-                    // CPHA=1: sample on falling (spi_clk_r==1→0), shift on rise
-                    // In both cases:
-                    //   sample when spi_clk_r == cfg_cpha  (first half-period edge)
-                    //   shift  when spi_clk_r != cfg_cpha  (second half-period edge)
-                    // -----------------------------------------------------------
                     if (spi_clk_r == cfg_cpha) begin
-                        // Sample edge — capture MISO into RX shift register
-                        rx_shift <= {rx_shift[6:0], miso};
+                        rx_shift <= {rx_shift[30:0], miso};
+                        crc_reg  <= {crc_reg[14:0], 1'b0} ^ (crc_fb ? 16'h1021 : 16'h0000);
                     end else begin
-                        // Shift edge — advance TX, decrement bit counter
-                        tx_shift <= {tx_shift[6:0], 1'b0};
-                        bit_cnt  <= bit_cnt - 1'b1;
-
-                        if (bit_cnt == 4'h1) begin
-                            // All 8 samples are already in rx_shift.
-                            // Do NOT re-sample miso here (this is the shift
-                            // edge, not a sample edge) — doing so would drop
-                            // rx_shift[7] and produce a left-rotate-by-1 error.
-                            rx_hold <= cfg_lsb
-                                ? {rx_shift[0], rx_shift[1], rx_shift[2], rx_shift[3],
-                                   rx_shift[4], rx_shift[5], rx_shift[6], rx_shift[7]}
-                                : rx_shift;
-                            irq <= 1'b1;
+                        tx_shift <= {tx_shift[30:0], 1'b0};
+                        if (bit_cnt == 5'h0) begin
+                            busy <= 1'b0;
+                            if (cfg_wlen == 5'd7) begin
+                                rx_hold <= cfg_lsb ? {24'h0, r0_r} : {24'h0, rx_shift[7:0]};
+                            end else if (cfg_wlen == 5'd15) begin
+                                rx_hold <= cfg_lsb ? {16'h0, r0_r, r1_r} : {16'h0, rx_shift[15:0]};
+                            end else begin
+                                rx_hold <= cfg_lsb ? {r0_r, r1_r, r2_r, r3_r} : rx_shift;
+                            end
+                            
+                            if (auto_en) begin
+                                sleep_timer <= timer_period;
+                                if (rx_shift[7:0] > thresh_high || rx_shift[7:0] < thresh_low) begin
+                                    auto_irq <= 1'b1;
+                                end
+                            end else begin
+                                irq <= 1'b1;
+                            end
+                            
+                        end else begin
+                            bit_cnt <= bit_cnt - 1'b1;
                         end
                     end
                 end
             end
-
         end
     end
 
-    // =========================================================================
-    // CPU read interface — wire-OR avoids cascaded ternary mux chain
-    // =========================================================================
     assign data_out =
-        ({8{address == 4'h0}} & rx_hold)
-      | ({8{address == 4'h1}} & {6'b0, irq, busy})
-      | ({8{address == 4'h2}} & {2'b0, clk_div})
-      | ({8{address == 4'h3}} & {1'b0, cfg_wlen, cfg_mcs, cfg_lsb, cfg_cpha, cfg_cpol});
+        (address == 6'h0) ? rx_hold :
+        (address == 6'h1) ? {24'h0, 5'b0, auto_irq, irq, busy} :
+        (address == 6'h2) ? {24'h0, 2'b0, clk_div} :
+        (address == 6'h8) ? {16'h0, crc_reg} : 
+        32'h0;
 
-    // =========================================================================
-    // Output mapping
-    // =========================================================================
-    assign uo_out = {4'b0, irq, cs_n, tx_shift[7], sclk_out};
+    assign data_ready = 1'b1;
+    assign user_interrupt = irq | auto_irq;
+    
+    assign uo_out = {4'b0, user_interrupt, cs_n, tx_shift[31], sclk_out};
 
-    // Suppress unused-input warnings for ui_in[7:1]
-    wire _unused_ui = &{ui_in[7:1]};
+    wire _unused_ui  = &{ui_in[7:1]};
+    wire _unused_rdn = &{data_read_n, 1'b0};
 
 endmodule
