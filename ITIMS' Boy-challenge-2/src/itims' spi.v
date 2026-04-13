@@ -36,7 +36,6 @@ module tqvp_spi_master (
     wire write_en = (data_write_n != 2'b11);
     wire crc_fb   = crc_reg[15] ^ miso;
 
-    // PHỤC HỒI: Việc dùng wires để đảo bit tốn 0 tài nguyên Area trên chip
     wire [7:0] r0_r = {rx_shift[0], rx_shift[1], rx_shift[2], rx_shift[3], rx_shift[4], rx_shift[5], rx_shift[6], rx_shift[7]};
     wire [7:0] r1_r = {rx_shift[8], rx_shift[9], rx_shift[10], rx_shift[11], rx_shift[12], rx_shift[13], rx_shift[14], rx_shift[15]};
     wire [7:0] r2_r = {rx_shift[16], rx_shift[17], rx_shift[18], rx_shift[19], rx_shift[20], rx_shift[21], rx_shift[22], rx_shift[23]};
