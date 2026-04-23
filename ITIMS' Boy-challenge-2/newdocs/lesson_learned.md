@@ -1,17 +1,17 @@
 # Lessons Learned
 
-## 1. Technical Insights: Physical Design & Timing
-- **Utilization vs. Routability**: We learned that a lower utilization (**11.7249%**) is not wasteful but essential for complex systems like ours (4,013 cells). "Packing" logic too tightly often leads to unresolvable routing congestion and timing violations.
-- **Post-Layout Reality Check**: Functional verification (RTL simulation) is not enough. Our experience with the **Standard Delay Format (.sdf)** proved that physical wire delays can significantly impact high-speed protocols. Validating with `.sdf` ensures the design works on actual silicon, not just in theory.
+## 1. Technical Insights: Physical Design & Timing Closure
+* **The Density-Routability Balance:** In Phase 1, we believed extreme sparsity was the only way to route a 4,000+ cell macro. In Phase 2, we learned that by refactoring combinational logic into cleaner sequential paths, we could safely compress the core utilization to **34.69%** while still achieving 0 routing violations. 
+* **The Reality of Combinational Bottlenecks:** Functional RTL simulation is dangerously optimistic. We learned that massive asynchronous multiplexers create unresolvable timing walls during physical synthesis. Pushing the clock to 71.42MHz required designing for the standard-cell level, not just the behavioral level.
 
-## 2. AI Collaboration Strategy
-- **Prompt Engineering**: The quality of AI output is directly proportional to the specificity of the input. We treated AI as a "junior engineer"—great for boilerplate Verilog (like the initial FSM) but requiring strict supervision for critical timing paths.
-- **Verification Assistant**: AI proved invaluable in analyzing verbose logs (OpenLane reports) and generating complex `cocotb` testbench assertions that would have taken hours to write manually.
+## 2. AI Collaboration Strategy (The "Human-in-the-Loop")
+* **AI as a Co-Pilot, Not an Architect:** The AI cannot "see" OpenLane routing congestion or CDC metastability; human engineering intuition remains irreplaceable.
+* **Verification Assistant:** AI proved invaluable as a diagnostic tool. Ingesting OpenLane log files and Yosys warnings into the LLM allowed us to rapidly pinpoint the exact source of negative slack.
 
 ## 3. Team & Workflow Management
-- **Git Discipline is Crucial**: We learned the hard way that "force pushing" or ignoring conflicts leads to chaos. Adopting a strict `git pull --rebase` workflow saved the team from "detached head" states and lost work.
-- **Role Specialization**: Assigning dedicated roles (Documentation, Physical Design, Verification) allowed us to parallelize work. While Kien focused on closing timing (WNS 0ns), Hai could simultaneously document the architectural decisions, significantly speeding up the submission process.
+* **Git Discipline is Crucial:** Adopting a strict, modular Git workflow (`git pull --rebase`) and separating the directories saved the team from merge chaos.
+* **Role Specialization & Parallelization:** Assigning dedicated roles was key to our rapid Phase 2 turnaround. While **Long** focused on refactoring RTL architecture, **Kien** extracted and analyzed OpenLane physical metrics, **Dung** drove the rigorous `cocotb` functional verification regressions, and **Hai** alongside **Quang** maintained real-time documentation and AI logging parity. This parallelization significantly accelerated our submission timeline.
 
 ## 4. Future Improvements
-- **Automated CI/CD**: For the next challenge, we plan to implement GitHub Actions to automatically run the `cocotb` testbench and OpenLane flow on every push, ensuring immediate feedback on integration errors.
-- **Hardware-Software Co-Design**: We realized that defining the Register Map (0x00, 0x01, 0x02) early is critical. Future projects will start with a frozen address specification to avoid integration headaches later.
+* **Advanced Datapath Decoupling:** To push the frequency boundary beyond 100MHz, we plan to implement an asynchronous dual-clock FIFO buffer to decouple the slow external SPI clock from the internal TinyQV bus clock.
+* **Automated CI/CD Pipeline:** We intend to implement GitHub Actions to automatically run `Verilator` linting and `cocotb` regressions on every push.
