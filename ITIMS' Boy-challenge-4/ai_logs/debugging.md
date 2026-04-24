@@ -1432,3 +1432,56 @@ endmodule
 ```
 Once you drop this in, fire up your testbench one last time. Would you like to review the synthesis and gate count logs after everything passes to ensure we hit our area targets for the AI-HDL competition?
 
+## Conversation 4: Debugging
+
+**Timestamp**: 2026-04-22 16:45:00
+
+**Tool**: Claude
+
+**Purpose**: Debugging
+
+**Prompt**: *Attached files*
+
+**Response**: The Error is Clear
+OpenLane's global placer is telling you exactly what to do:
+```Given target density: 0.60
+Suggested target density: 0.77
+Error: GPL-0302 Use a higher -density or re-floorplan with a larger core area.
+```
+Your core floorplanned to 169×168 (smaller than the die due to margins), and there isn't enough room to place all cells at 60% density. You have two options — pick one or combine both:
+
+Option A: Increase Density (quickest fix)
+```json
+"PL_TARGET_DENSITY": 0.75
+```
+Use 0.75 instead of the suggested 0.77 to leave a small routing buffer. This is the least invasive change.
+
+Option B: Increase Die Area (more routing headroom)
+```json
+"DIE_AREA": "0 0 210 210",
+"PL_TARGET_DENSITY": 0.65
+```
+A larger die with moderate density gives the router more breathing room and is safer if you're already seeing congestion.
+
+Option C: Both (recommended for stability)
+json
+```"DIE_AREA": "0 0 200 200",
+"PL_TARGET_DENSITY": 0.72
+```
+Go back to your original 200×200 die (which you had for good LVS/power grid reasons), and raise density to 0.72. This is the most balanced choice given your history.
+
+Also: You still have a duplicate key warning to fix
+Your config has CLOCK_PORT and FP_SIZING defined twice each. JSON doesn't error on this but OpenLane may use the wrong value. Remove the first occurrence of each:
+```json
+// Remove these (they appear early in the file, duplicated later):
+"CLOCK_PORT": "clk",   // first occurrence — remove
+"FP_SIZING": "absolute" // first occurrence — remove
+```
+My Recommended Final Config Changes
+```json
+"CLOCK_PERIOD": 14.0,
+"DIE_AREA": "0 0 200 200",
+"PL_TARGET_DENSITY": 0.72,
+"PL_TARGET_DENSITY_PCT": 70
+```
+Remove duplicate CLOCK_PORT and FP_SIZING keys, then re-run. The flow should get past Step 7 cleanly.
