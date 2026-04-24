@@ -193,3 +193,69 @@ The Fix: Replaced it with an explicit busy Flip-Flop. Because bit_cnt was reduce
 Config Register Protection:
 
 Conditioned the config register writes on !busy (e.g., 4'h2: if (!busy) clk_div <= data_in[5:0];). This ensures the CPU cannot accidentally corrupt a transaction mid-flight by changing the clock divider or CPOL/CPHA settings while the FSM is active.
+
+## Conversation 2: Updating config.json 
+
+**Timestamp**: 2026-04-22 16:37:00
+
+**Tool**: Claude 
+
+**Purpose**: Improve the PPA result.
+
+**Prompt**: i am creating a tinyqv project and now when it come to running the Openlane toolchain, i want to optimize the PPA of this design, how can i do that. i am thinking of optimize the area by editing the config.json file.
+**Response**: Key Issues & Optimization Strategies
+🔴 Critical: Clock Period Mismatch
+Your CLOCK_PERIOD is 20.0ns (~50MHz), but the comment explicitly states TinyQV must synthesize at 70MHz (~14ns). This is both a performance problem and an area problem — a loose clock lets the synthesizer use larger, slower cells.
+```json
+"CLOCK_PERIOD": 14.0
+```
+
+🟠 Area: Synthesis Strategy
+You're missing an explicit synthesis strategy. Add this to target area reduction:
+```json
+"SYNTH_STRATEGY": "AREA 3",
+"SYNTH_SIZING": 1
+```
+`AREA 3` aggressively minimizes gate count
+`SYNTH_SIZING` lets the resizer downsize cells post-synthesis
+
+
+🟠 Area: Die Size vs. Density Balance
+You increased DIE_AREA to 200x200 to fix LVS/Power Grid issues, but also dropped PL_TARGET_DENSITY to 0.55. These two changes together give you a very underpacked design. Try:
+```json
+"DIE_AREA": "0 0 175 175",
+"PL_TARGET_DENSITY": 0.60
+```
+Shrinking the die while slightly increasing density gets you more area savings while keeping routing manageable. If congestion returns, step back to 180x180.
+
+🟡 Routing: Congestion vs. Area Tradeoff
+You have GRT_ALLOW_CONGESTION: 1 which bypasses congestion errors — this is safe for a first pass but can lead to DRC violations downstream. Pair it with a density cap:
+```json
+"GRT_ALLOW_CONGESTION": 1,
+"GRT_OVERFLOW_ITERS": 50
+```
+🟡 Margins: Left/Right are Very Wide
+`LEFT_MARGIN_MULT: 6` and RIGHT_MARGIN_MULT: 6 consume a lot of die edge area. For TinyTapeout tiles this is usually required for I/O placement, but if you're seeing wasted whitespace on the sides, try reducing to 4.
+
+Suggested Optimized Config Diff
+```json
+// Change these values:
+"CLOCK_PERIOD": 14.0,           // was 20.0 — match TinyQV 70MHz requirement
+"DIE_AREA": "0 0 175 175",      // was 200x200 — smaller die = less area
+"PL_TARGET_DENSITY": 0.60,      // was 0.55 — pack slightly tighter
+
+// Add these new keys (before the "DO NOT CHANGE" section):
+"SYNTH_STRATEGY": "AREA 3",
+"SYNTH_SIZING": 1,
+"PL_RESIZER_DESIGN_OPTIMIZATIONS": 1,
+"GRT_OVERFLOW_ITERS": 50
+```
+Recommended Iteration Flow
+
+First: Fix CLOCK_PERIOD to 14.0 alone and re-run — this often reduces area because the synthesizer picks faster/smaller standard cells to meet timing.
+Second: Add SYNTH_STRATEGY: "AREA 3" + SYNTH_SIZING: 1.
+Third: Carefully shrink DIE_AREA in steps (200→185→175) while monitoring the routing congestion report (openroad.log) for overflow.
+
+The congestion report lines to watch are:
+```[INFO GRT-0053] Total overflow: X```
+Keep this under ~500 for clean routing. If it spikes, increase die size or lower density slightly.
