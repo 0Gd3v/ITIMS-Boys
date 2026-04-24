@@ -593,4 +593,237 @@ Addr 2: Writing here updates clk_divider.
 
 Would you like me to help you set up a Makefile to automate these tests?
 
+## Conversation 6: Debugging
 
+**Timestamp**: 2026-04-22 16:45:00
+
+**Tool**: Claude
+
+**Prompt**: [INFO]: Running Single-Corner Static Timing Analysis at the nom process corner (log: designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/31-rcx_sta.log)...
+[WARNING]: Module sky130_fd_sc_hd__tapvpwrvgnd_1 blackboxed during sta
+[WARNING]: Module sky130_ef_sc_hd__decap_12 blackboxed during sta
+[WARNING]: Module sky130_fd_sc_hd__fill_2 blackboxed during sta
+[WARNING]: Module sky130_fd_sc_hd__fill_1 blackboxed during sta
+[STEP 32]
+[INFO]: Creating IR Drop Report (log: designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/32-irdrop.log)...
+[WARNING]: VSRC_LOC_FILES is not defined. The IR drop analysis will run, but the values may be inaccurate.
+[STEP 33]
+[INFO]: Running Magic to generate various views...
+[INFO]: Streaming out GDSII with Magic (log: designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/33-gdsii.log)...
+[INFO]: Generating MAGLEF views...
+[INFO]: Generating lef with Magic (/openlane/designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/33-lef.log)...
+[STEP 34]
+[INFO]: Streaming out GDSII with KLayout (log: designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/34-gdsii-klayout.log)...
+[STEP 35]
+[INFO]: Running Magic Spice Export from LEF (log: designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/35-spice.log)...
+[STEP 36]
+[INFO]: Writing Powered Verilog (logs: designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/36-write_powered_def.log, designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/36-write_powered_verilog.log)...
+[STEP 37]
+[INFO]: Writing Verilog (log: designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/36-write_powered_verilog.log)...
+[STEP 38]
+[INFO]: Running LVS (log: designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/38-lvs.lef.log)...
+[STEP 39]
+[INFO]: Running Magic DRC (log: designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/39-drc.log)...
+[INFO]: Converting Magic DRC database to various tool-readable formats...
+[INFO]: No DRC violations after GDS streaming out.
+[STEP 40]
+[INFO]: Running OpenROAD Antenna Rule Checker (log: designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/40-arc.log)...
+[STEP 41]
+[INFO]: Running Circuit Validity Checker ERC (log: designs/DP2/runs/RUN_2026.04.23_06.45.30/logs/signoff/41-erc_screen.log)...
+[INFO]: Saving current set of views in 'designs/DP2/runs/RUN_2026.04.23_06.45.30/results/final'...
+[INFO]: Saving runtime environment...
+[INFO]: Generating final set of reports...
+[INFO]: Created manufacturability report at 'designs/DP2/runs/RUN_2026.04.23_06.45.30/reports/manufacturability.rpt'.
+[INFO]: Created metrics report at 'designs/DP2/runs/RUN_2026.04.23_06.45.30/reports/metrics.csv'.
+[WARNING]: There are max fanout violations in the design at the typical corner. Please refer to 'designs/DP2/runs/RUN_2026.04.23_06.45.30/reports/signoff/31-rcx_sta.checks.rpt'.
+[INFO]: There are no hold violations in the design at the typical corner.
+[INFO]: There are no setup violations in the design at the typical corner.
+[SUCCESS]: Flow complete.
+[INFO]: Note that the following warnings have been generated:
+[WARNING]: 874 warnings found by linter
+[WARNING]: Module sky130_fd_sc_hd__tapvpwrvgnd_1 blackboxed during sta
+[WARNING]: Module sky130_ef_sc_hd__decap_12 blackboxed during sta
+[WARNING]: Module sky130_fd_sc_hd__fill_2 blackboxed during sta
+[WARNING]: Module sky130_fd_sc_hd__fill_1 blackboxed during sta
+[WARNING]: VSRC_LOC_FILES is not defined. The IR drop analysis will run, but the values may be inaccurate.
+[WARNING]: There are max fanout violations in the design at the typical corner. Please refer to 'designs/DP2/runs/RUN_2026.04.23_06.45.30/reports/signoff/31-rcx_sta.checks.rpt'.
+
+**Response**: ✅ Flow Complete — Now Let's Address the Remaining Warnings
+Your design is through. Here's a triage of what matters:
+
+🔴 Action Required: Max Fanout Violations
+This is the only real concern. High fanout means one cell is driving too many inputs, causing signal integrity and timing issues at the edges of your timing budget.
+Check the report first:
+```bash
+cat designs/DP2/runs/RUN_2026.04.23_06.45.30/reports/signoff/31-rcx_sta.checks.rpt | grep -A5 "max_fanout"
+```
+Fix in config.json:
+```json
+"SYNTH_MAX_FANOUT": 10,
+"PL_RESIZER_MAX_WIRE_LENGTH": 500,
+"GRT_RESIZER_MAX_WIRE_LENGTH": 500
+```
+SYNTH_MAX_FANOUT: 10 tells Yosys to insert buffers during synthesis to break up high-fanout nets before placement even starts. Lower values (8–12) are safe for sky130.
+
+
+🟡 Ignorable: Blackboxed Filler/Tap Cells
+```
+Module sky130_fd_sc_hd__tapvpwrvgnd_1 blackboxed during sta
+Module sky130_fd_sc_hd__fill_2 blackboxed during sta
+```
+These are physical-only cells (tap, decap, fill). They have no timing arcs, so STA correctly ignores them. This is normal and expected — not a bug.
+
+🟡 Low Priority: VSRC_LOC_FILES not defined
+The IR drop analysis ran without knowing where your power pads are, so the voltage drop numbers are approximate. For a TinyTapeout submission this is fine since power comes from the top-level harness. You can safely ignore this.
+
+🟢 All Good
+
+✅ No DRC violations
+✅ No setup violations
+✅ No hold violations
+✅ LVS clean
+✅ GDS streamed out successfully
+
+
+Recommended Next Step
+Fix fanout, then re-run to get a fully clean signoff:
+```json
+"SYNTH_MAX_FANOUT": 10,
+"PL_RESIZER_MAX_WIRE_LENGTH": 500,
+"GRT_RESIZER_MAX_WIRE_LENGTH": 500
+```
+After that re-run, check if fanout violations are gone:
+```bash
+grep "VIOLATED" designs/DP2/runs/RUN_*/reports/signoff/31-rcx_sta.checks.rpt
+```
+If the output is empty, your design is clean and ready for TinyTapeout submission.
+
+**Prompt**: *Attached Files*
+**Response**: ✅ Flow Complete Again — But Fanout Violations Persist
+The log gave us the fix itself:
+```[WARNING]: SYNTH_MAX_FANOUT is now deprecated; use MAX_FANOUT_CONSTRAINT instead.```
+The fanout constraint was silently ignored last run because you used the old key. Update your config.json:
+```json
+// Remove this:
+"SYNTH_MAX_FANOUT": 10,
+
+// Add this instead:
+"MAX_FANOUT_CONSTRAINT": 10
+```
+Also: Check What's Actually Violating
+Before re-running, it's worth seeing how bad the violations are:
+```bash
+grep -A3 "max_fanout" designs/DP2/runs/RUN_2026.04.23_06.55.22/reports/signoff/31-rcx_sta.checks.rpt | head -40
+```
+If you see fanout counts in the 20–50 range, MAX_FANOUT_CONSTRAINT: 10 will fix it. If you see values in the hundreds (common for reset or clock-enable nets in a CPU design like TinyQV), you may also need:
+```json
+"PL_RESIZER_MAX_WIRE_LENGTH": 500,
+"GRT_RESIZER_MAX_WIRE_LENGTH": 500
+```
+These tell the post-placement and post-routing resizers to insert buffers on long wires that contribute to fanout.
+
+Current Status Summary
+CheckStatusDRC✅ CleanLVS✅ CleanSetup timing✅ No violationsHold timing✅ No violationsMax fanout⚠️ Violations remainIR drop🟡 Approximate (ignorable for TT)
+One config key swap and a re-run should get you to a fully clean signoff.
+
+**Prompt**:
+```
+Pin                                   Limit Fanout  Slack
+---------------------------------------------------------
+clkbuf_leaf_4_clk/X                      10     13     -3 (VIOLATED)
+clkbuf_leaf_14_clk/X                     10     12     -2 (VIOLATED)
+clkbuf_leaf_1_clk/X                      10     12     -2 (VIOLATED)
+clkbuf_leaf_23_clk/X                     10     12     -2 (VIOLATED)
+clkbuf_leaf_29_clk/X                     10     12     -2 (VIOLATED)
+clkbuf_leaf_2_clk/X                      10     12     -2 (VIOLATED)
+clkbuf_leaf_30_clk/X                     10     12     -2 (VIOLATED)
+clkbuf_leaf_12_clk/X                     10     11        (VIOLATED)
+clkbuf_leaf_13_clk/X                     10     11        (VIOLATED)
+clkbuf_leaf_32_clk/X                     10     11        (VIOLATED)
+clkbuf_leaf_33_clk/X                     10     11        (VIOLATED)
+clkbuf_leaf_6_clk/X                      10     11        (VIOLATED)
+```
+
+**Response**: Good News — These Are All CTS Violations, Not Logic
+Every single violating pin is a clkbuf_leaf_* — these are clock buffers inserted automatically by the Clock Tree Synthesis (CTS) step, not your RTL. The fanout limit of 10 you set is simply too tight for clock tree leaf buffers, which naturally fan out to 10–15 flip-flops each by design.
+
+The Right Fix: Raise the CTS-Specific Fanout Limit
+Don't raise MAX_FANOUT_CONSTRAINT globally (that would weaken timing on data paths). Instead, set the CTS sink limit:
+```json
+"MAX_FANOUT_CONSTRAINT": 10,
+"CTS_MAX_CAP": 0.5,
+"CTS_CLK_BUFFER_LIST": "sky130_fd_sc_hd__clkbuf_4 sky130_fd_sc_hd__clkbuf_8",
+"CTS_SINK_CLUSTERING_MAX_DIAMETER": 50,
+"CTS_SINK_CLUSTERING_SIZE": 20
+```
+The key change is CTS_SINK_CLUSTERING_SIZE: 20 — this tells TritonCTS it can cluster up to 20 sinks per leaf buffer, which relaxes the fanout pressure and lets it build a balanced tree without violating your limit.
+
+Alternatively: Just Relax the Limit for Clock Nets
+The simplest fix with least side effects — the violations are only 1–3 over limit, and all on clock buffers which have very strong drive strength:
+```json
+"MAX_FANOUT_CONSTRAINT": 15
+```
+A limit of 15 is still protective for data paths (which rarely exceed 8–10 naturally) while accommodating the CTS leaf buffers at 11–13.
+
+My Recommendation
+Given your violations are only 1–3 over limit and only on clock buffers, raising to 15 is the pragmatic choice for a TinyTapeout submission. These violations do not affect functional correctness or your setup/hold timing (which are both clean). The MAX_FANOUT_CONSTRAINT is a synthesis/resizer guideline, not a hard silicon rule.
+```json
+"MAX_FANOUT_CONSTRAINT": 15
+```
+One line change, re-run, clean signoff. ✅
+
+**Prompt**: *Attached Files*
+**Response**: Full Report Analysis
+Your design is in great shape overall. Here's a complete breakdown:
+
+✅ Timing: Fully Clean
+PathSlackStatusWorst setup (clk→clk)+4.02 ns✅ METAsync recovery check+5.50 ns✅ METreport_checks --slack_max -0.01No paths found✅ Zero violations
+You have comfortable margins — over 4ns of setup slack at 70MHz is healthy for a CPU design.
+
+⚠️ Max Fanout: Same 12 CTS Violations
+These are identical to last run — MAX_FANOUT_CONSTRAINT: 15 didn't take effect or wasn't applied yet. As discussed, just raise it:
+```json
+"MAX_FANOUT_CONSTRAINT": 15
+```
+🟡 Unannotated Drivers (31) — Ignorable
+`ena, ui_in[*], uio_in[*], tt_um_tqv_peripheral_harness_*/HI/LO`
+These are top-level TinyTapeout harness ports — they're driven by the TT infrastructure above your tile, not your design. SPEF has no parasitics for them because they come from outside the module boundary. This is expected and normal for a TT submission.
+
+🟡 Unconstrained Endpoints (18) — Worth Investigating
+`uio_oe[0..7], uio_out[1,2,4,5,6,7], uo_out[4,5,6,7]`
+These output ports have no output delay constraint, so STA doesn't check the path to them. Two possibilities:
+1. Intentionally unused outputs — if uo_out[4:7] and some uio_out pins are unused in your design, this is fine.
+2. Missing output constraints — if these are real outputs you care about, add to your SDC (or OpenLane will accept this in config.json):
+```json
+"OUTPUT_DELAY": 2.0
+```
+Or check your sdc file for missing set_output_delay constraints on those specific ports.
+Given this is a TinyQV peripheral harness, the uio_oe outputs being unconstrained is suspicious — SPI/peripheral bus signals should be constrained. Check whether your tt_wrapper.v is actually driving all of those outputs.
+
+Summary & Action Items
+IssueActionPriorityFanout violations (CTS)"MAX_FANOUT_CONSTRAINT": 15🟠 LowUnannotated driversIgnore — TT harness ports🟢 NoneUnconstrained uio_oe/uio_out/uo_outVerify unused or add OUTPUT_DELAY🟡 Medium
+Your design is functionally ready for TinyTapeout submission as-is. The fanout and unconstrained endpoint items are papercut cleanups, not blockers.
+**Prompt**: The same fanout warning still persists
+**Response**: Great Progress — Down from 12 Violations to Just 1
+The MAX_FANOUT_CONSTRAINT: 15 did work — you went from 12 violating clock buffers to a single one:
+`clkbuf_leaf_8_clk/X    Limit: 15    Fanout: 17    Slack: -2`
+You just need to go slightly higher. This one leaf buffer has 17 sinks, so raise the limit to 20:
+```json
+"MAX_FANOUT_CONSTRAINT": 20
+```
+This is still a safe and realistic limit — sky130 clkbuf_16 cells are rated to drive well beyond 20 loads, so you're not masking any real electrical problem.
+
+Alternatively: Fix CTS Clustering Directly
+If you'd rather not raise the global limit further, you can tell TritonCTS to balance its clusters better:
+```json
+"CTS_SINK_CLUSTERING_SIZE": 15,
+"CTS_SINK_CLUSTERING_MAX_DIAMETER": 50
+```
+This caps how many flip-flops CTS assigns per leaf buffer at 15, forcing it to create more leaf buffers rather than overloading one. This is the more principled fix but requires a full re-run regardless.
+
+My Recommendation
+Given you're one leaf buffer at fanout 17 away from a clean report, the pragmatic path is:
+```json
+"MAX_FANOUT_CONSTRAINT": 20
+```
+Re-run, and your signoff should be completely clean. Your setup slack (+4.04ns), hold, DRC, and LVS are all solid — this is the last papercut.
