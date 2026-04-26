@@ -1,7 +1,7 @@
 # 🛡️ Security Review Document (DP3)
-**Project:** Secure Full-Duplex SPI Master with Autonomous Sleep-Walker
-**Team:** ITIMS-Boys
-**Prepared by:** Cao Hoàng Long - Security Lead
+**Project:** Secure Full-Duplex SPI Master with Autonomous Sleep-Walker  
+**Team:** ITIMS-Boys  
+**Prepared by:** Cao Hoàng Long - Security Lead  
 
 ---
 
@@ -55,7 +55,7 @@ Based on the AI assessment, we mapped our RTL flaws to standard Common Weakness 
 We collaborated with our LLM co-pilots to generate synthesis-friendly hardware countermeasures for every identified CWE.
 
 ### Fix for CWE-284: Tamper-Evident Hardware Lockout (Elevation of Privilege Mitigation)
-* **The Mitigation:** We implemented a 32-bit gated lock mechanism. Access to the autonomous configuration zone now requires the exact key `32'hCAFEBABE` written to Address `0x9`. 
+* **The Mitigation:** We implemented a 32-bit gated lock mechanism. Access to the autonomous configuration zone now requires the exact key `32'hCAFEBABE` written to Address `0x9`.
 * **Tamper-Evident Feature:** Any write attempt with an invalid key instantly asserts a sticky `access_violation` latch. This permanently freezes the secure configuration zone until a physical hardware reset, completely neutralizing brute-force attacks at the silicon level.
 
 ### Fix for CWE-319: On-the-fly Serial LFSR (Data Tampering Mitigation)
@@ -70,26 +70,26 @@ We collaborated with our LLM co-pilots to generate synthesis-friendly hardware c
 *Criteria Met: Comprehensive security testing; Functional correctness is preserved; clean regression tests.*
 
 ### 4.1 Attacker Simulation (Proving the Fix Works)
-We engineered a multi-threaded **cocotb** Python environment utilizing asynchronous coroutines (`cocotb.start_soon`). We deployed background "Attacker" threads that injected randomized, invalid 32-bit keys into the Lock Register during active SPI transactions. 
-* **Result:** The testbench verified that the `access_violation` trap engaged deterministically 100% of the time, proving the hardware lock successfully halts unauthorized access.
+We engineered a multi-threaded **cocotb** Python environment utilizing asynchronous coroutines (`cocotb.start_soon`). We deployed background "Attacker" threads that injected randomized, invalid 32-bit keys into the Lock Register during active SPI transactions.
+* **Result:** The testbench verified that the `access_violation` trap engaged deterministically 100% of the time, proving the hardware lock successfully halts unauthorized access without corrupting active SPI shifts.
 
 ### 4.2 Preserving Functional Correctness (Regression Testing)
 Security additions must not break core functionality. We ran the full suite of DP2 baseline regression tests against the new DP3 RTL.
-* **Result:** All legacy SPI transactions (CPOL/CPHA configurations, clock scaling, full-duplex shifting) passed perfectly. The security FSM and SPI FSM are successfully decoupled. **Functional correctness is 100% preserved.**
+* **Result:** All legacy SPI transactions (CPOL/CPHA configurations, clock scaling, full-duplex shifting) passed perfectly. The security FSM and SPI FSM are successfully decoupled. **Functional correctness is 100% preserved under the safe 15.0 ns system clock.**
 
 ---
 
 ## 5. Documentation of Mitigations & Trade-offs (15%)
 *Criteria Met: Clear DP3 report; detailed explanation of mitigations & trade-offs.*
 
-Implementing robust hardware countermeasures requires a conscious trade-off in silicon area (The "Security Tax"). Below is the OpenLane ASIC physical synthesis comparison (Sky130 PDK):
+Implementing robust hardware countermeasures requires a conscious trade-off in silicon area (The "Security Tax"). Below is the OpenLane ASIC physical synthesis comparison (Sky130 PDK), measured strictly against our actual DP2 Baseline:
 
 | Metric | DP2 (Baseline) | DP3 (Secured) | Trade-off Impact & Justification |
 |:---|:---:|:---:|:---|
-| **Core Area** | 33,344.48 µm² | 80,146.97 µm² | **+140.3% Area Tax**. Justified by the addition of 32-bit Gated Comparators and the Tamper-Evident FSM. |
-| **Cell Count** | 4,265 Cells | 9,435 Cells | **+121.2%**. The direct silicon cost for hardware-enforced robustness. |
-| **Utilization** | 49.18% | 29.92% | **-39.1%**. Target density was intentionally lowered to provide routing whitespace, preventing TritonRoute congestion. |
-| **Clock Period** | 14.0 ns | 14.0 ns | **0.0% Impact**. Serial CRC architecture successfully prevented timing degradation. |
-| **Worst Neg Slack**| 0.000 ns | 0.000 ns | **Timing met successfully**. Security logic was kept completely off the critical SPI datapath. |
+| **Core Area** | 33,344.48 µm² | 80,146.97 µm² | **+140.4% Area Tax**. Justified by the addition of 32-bit Gated Comparators and the Tamper-Evident FSM. |
+| **Cell Count** | **4,039 Cells** | 9,435 Cells | **+133.6% Increase**. The direct standard-cell cost for hardware-enforced robustness and the LFSR datapath. |
+| **Utilization** | **34.69%** | 29.92% | **Lowered Density**. Target density was intentionally relaxed to provide TritonRoute with sufficient whitespace to route the 9,400+ cells without DRC violations. |
+| **Clock Period** | 14.0 ns | **15.0 ns** | **Stable Frequency Adoption**. We adopted the 15.0 ns (66.67 MHz) clock period recommended during our DP2 analysis to securely accommodate the LFSR logic. |
+| **Worst Neg Slack**| **-1.00 ns** | **0.000 ns** | **Timing Closure Achieved**. By relaxing the clock constraint to 15.0 ns, we successfully eliminated the DP2 setup violation while integrating full security hardening. |
 
-**Conclusion:** By accepting a 140% increase in physical area to house the 32-bit secure datapath, we successfully reduced our DREAD risk score from **9.2/10 (Critical)** to a secure baseline, while impeccably maintaining our 71.4 MHz (14.0 ns) performance target and 0.000 ns WNS.
+**Conclusion:** By accepting a ~140% increase in physical area to house the 32-bit secure datapath and tamper-evident latches, and by adopting the safe 15.0 ns (66.67 MHz) system clock identified in Phase 2, we successfully reduced our DREAD risk score from **9.2/10 (Critical)** to a secure baseline. This pragmatic engineering approach allowed us to achieve a perfect 0.000 ns Worst Negative Slack (WNS) while delivering a highly robust, secure hardware peripheral.

@@ -4,7 +4,7 @@
 - **Submission Date**: 2026-03-25
 - **Challenge Number**: 3
 - **Team Name**: ITIMS-Boys
-- **Team ID**: [Điền Team ID của nhóm bạn vào đây]
+- **Team ID**: 
 
 ## Team Members
 | Name | Role | Email | Contribution % |
